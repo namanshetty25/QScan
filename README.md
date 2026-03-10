@@ -177,5 +177,5 @@ This project is developed for the **PNB Cybersecurity Hackathon 2025**.
 ---
 
 <p align="center">
-  <i>Built with ❤️ for a quantum-safe future</i>
+  <i>Built for a quantum-safe future</i>
 </p>
