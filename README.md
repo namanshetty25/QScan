@@ -87,7 +87,7 @@ qscan/
 ```bash
 # Clone the repository
 git clone https://github.com/Akarsh-1A1/Qscan.git
-cd Qscan
+cd QScan
 
 # Create virtual environment
 python -m venv venv
