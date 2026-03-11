@@ -33,8 +33,9 @@ Thumbs.db
 *.log
 logs/
 
-# Scan Results (keep demo_results only)
+# Scan Results (keep demo_results and whitelisted samples only)
 results/
+!results/pnbindia.in_20260311_173218/
 output/
 
 # Database
