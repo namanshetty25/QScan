@@ -1,9 +1,18 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
-import { useScanResults } from '../hooks/useScan';
-import { motion } from 'framer-motion';
-import { SkeletonCard, EmptyState } from '../components/common/badges';
-import './pages.css';
+import React from "react";
+import { useParams } from "react-router-dom";
+import { useScanResults } from "../hooks/useScan";
+import { motion } from "framer-motion";
+import {
+  SkeletonCard,
+  EmptyState,
+  RiskBadge,
+  TLSVersionBadge,
+  PQCStatusPill,
+} from "../components/common/badges";
+
+import { calculateQuantumReadinessScore } from "../utils/pqcClassifier";
+
+import "./pages.css";
 
 function Results() {
   const { scanId } = useParams();
@@ -11,10 +20,12 @@ function Results() {
 
   if (loading) {
     return (
-      <div className="container" style={{ padding: '3rem 0' }}>
+      <div className="container" style={{ padding: "3rem 0" }}>
         <h2>Loading Results...</h2>
         <div className="grid grid-3">
-          {[1, 2, 3, 4, 5, 6].map(i => <SkeletonCard key={i} />)}
+          {[1, 2, 3, 4, 5].map((i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       </div>
     );
@@ -22,99 +33,258 @@ function Results() {
 
   if (error || !cbom) {
     return (
-      <div className="container" style={{ padding: '3rem 0' }}>
+      <div className="container" style={{ padding: "3rem 0" }}>
         <EmptyState
           icon="❌"
           title="Failed to Load Results"
-          message={error || 'Results not found'}
+          message={error || "Results not found"}
         />
       </div>
     );
   }
 
+  const asset = cbom.crypto_assets?.[0];
+
+  /* -------------------------------
+     Quantum Readiness Score
+  --------------------------------*/
+
+  const readinessScore = calculateQuantumReadinessScore(cbom);
+
+  const readinessLabel =
+    readinessScore >= 80
+      ? "Quantum Ready"
+      : readinessScore >= 50
+        ? "Partial PQC"
+        : "Not Ready";
+
+  const readinessColor =
+    readinessScore >= 80
+      ? "var(--accent-safe)"
+      : readinessScore >= 50
+        ? "orange"
+        : "red";
+
   return (
-    <div style={{ minHeight: '100vh' }}>
-      <div className="container" style={{ padding: '3rem 0' }}>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
+    <div style={{ minHeight: "100vh" }}>
+      <div className="container" style={{ padding: "3rem 0" }}>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+
+          {/* HEADER */}
           <div className="dashboard-header">
-            <div className="dashboard-title">
-              <h2>{cbom.metadata?.organization_domain || 'Scan Results'}</h2>
-              <p style={{ color: 'var(--text-muted)' }}>
-                Scan ID: {scanId}
-              </p>
-            </div>
+            <h2>{cbom.metadata?.organization_domain}</h2>
+            <p style={{ color: "var(--text-muted)" }}>
+              Scan ID: {scanId}
+            </p>
           </div>
 
-          {/* Summary Stats */}
+          {/* ------------------------------
+              QUANTUM READINESS GAUGE
+          ------------------------------- */}
+
+          <div
+            className="card"
+            style={{
+              marginBottom: "2rem",
+              textAlign: "center",
+            }}
+          >
+            <h3>Quantum Readiness Score</h3>
+
+            <div
+              style={{
+                fontSize: "3rem",
+                fontWeight: "bold",
+                marginTop: "10px",
+                color: readinessColor,
+              }}
+            >
+              {readinessScore}%
+            </div>
+
+            <p style={{ color: "var(--text-muted)" }}>
+              {readinessLabel}
+            </p>
+          </div>
+
+          {/* SUMMARY */}
           <div className="metric-grid">
+
             <div className="metric-card">
-              <div className="metric-value">{cbom.stats?.totalAssets || 0}</div>
-              <div className="metric-label">Total Assets</div>
-            </div>
-            <div className="metric-card" style={{ borderLeft: '4px solid var(--accent-danger)' }}>
-              <div className="metric-value" style={{ color: 'var(--accent-danger)' }}>
-                {cbom.stats?.criticalCount || 0}
+              <div className="metric-value">
+                {cbom.stats.totalAssets}
               </div>
-              <div className="metric-label">Critical Vulnerabilities</div>
-            </div>
-            <div className="metric-card" style={{ borderLeft: '4px solid var(--accent-safe)' }}>
-              <div className="metric-value" style={{ color: 'var(--accent-safe)' }}>
-                {cbom.stats?.pqcReadyCount || 0}
+              <div className="metric-label">
+                Total Assets
               </div>
-              <div className="metric-label">PQC Ready</div>
             </div>
+
+            <div
+              className="metric-card"
+              style={{ borderLeft: "4px solid red" }}
+            >
+              <div className="metric-value">
+                {cbom.stats.criticalCount}
+              </div>
+              <div className="metric-label">
+                Critical Vulnerabilities
+              </div>
+            </div>
+
+            <div
+              className="metric-card"
+              style={{ borderLeft: "4px solid green" }}
+            >
+              <div className="metric-value">
+                {cbom.stats.pqcReadyCount}
+              </div>
+              <div className="metric-label">
+                PQC Ready
+              </div>
+            </div>
+
           </div>
 
-          {/* CBOM Table */}
+          {/* ASSET TABLE */}
           <div className="table-wrapper">
             <table>
               <thead>
                 <tr>
-                  <th>Asset/Endpoint</th>
-                  <th>TLS Version</th>
-                  <th>Cipher Suite</th>
+                  <th>Asset</th>
+                  <th>TLS</th>
+                  <th>Cipher</th>
                   <th>PQC Status</th>
                   <th>Risk</th>
                 </tr>
               </thead>
+
               <tbody>
-                {cbom.crypto_assets?.map((asset, idx) => (
-                  <motion.tr
-                    key={idx}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
-                    <td><code>{asset.host}:{asset.port}</code></td>
-                    <td>{asset.tls_version || 'N/A'}</td>
-                    <td style={{ fontSize: '0.85rem' }}><code>{asset.cipher_suite?.slice(0, 30)}...</code></td>
-                    <td>{asset.pqcClassification?.label || 'N/A'}</td>
-                    <td>{asset.pqc_status || 'N/A'}</td>
-                  </motion.tr>
+                {cbom.crypto_assets.map((asset, idx) => (
+                  <tr key={idx}>
+
+                    <td>
+                      <code>
+                        {asset.host}:{asset.port}
+                      </code>
+                    </td>
+
+                    <td>
+                      <TLSVersionBadge
+                        version={asset.tls_version}
+                      />
+                    </td>
+
+                    <td>
+                      <code>{asset.cipher_suite}</code>
+                    </td>
+
+                    <td>
+                      <PQCStatusPill
+                        status={asset.pqcClassification.status}
+                      />
+                    </td>
+
+                    <td>
+                      <RiskBadge score={asset.riskScore} />
+                    </td>
+
+                  </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* Raw Data for inspection */}
-          <details style={{ marginTop: '2rem' }}>
-            <summary style={{ cursor: 'pointer', fontWeight: 'bold', marginBottom: '1rem' }}>
-              Raw CBOM Data (JSON)
-            </summary>
-            <pre style={{ 
-              backgroundColor: 'var(--bg-secondary)',
-              padding: '1rem',
-              borderRadius: '8px',
-              overflowX: 'auto',
-              maxHeight: '400px'
-            }}>
+          {/* QUANTUM THREAT PANEL */}
+          {asset && (
+            <div className="card" style={{ marginTop: "2rem" }}>
+              <h3>Quantum Threat Assessment</h3>
+
+              <p>
+                <strong>Estimated Quantum Threat:</strong>{" "}
+                {asset.threatTimeline}
+              </p>
+
+              <p>
+                <strong>Migration Deadline:</strong>{" "}
+                {asset.migrationDeadline}
+              </p>
+
+              <p>
+                <strong>Urgency:</strong>{" "}
+                {asset.urgency}
+              </p>
+            </div>
+          )}
+
+          {/* CERTIFICATE INFO */}
+          {asset?.formattedCert && (
+            <div className="card" style={{ marginTop: "2rem" }}>
+              <h3>Certificate Information</h3>
+
+              <p>
+                <strong>Subject:</strong>{" "}
+                {asset.formattedCert.subject}
+              </p>
+
+              <p>
+                <strong>Issuer:</strong>{" "}
+                {asset.formattedCert.issuer}
+              </p>
+
+              <p>
+                <strong>Valid From:</strong>{" "}
+                {asset.formattedCert.validFrom}
+              </p>
+
+              <p>
+                <strong>Valid Until:</strong>{" "}
+                {asset.formattedCert.validUntil}
+              </p>
+
+              <p>
+                <strong>Days Until Expiry:</strong>{" "}
+                {asset.formattedCert.daysUntilExpiry}
+              </p>
+            </div>
+          )}
+
+          {/* RECOMMENDATIONS */}
+          {asset?.recommendations && (
+            <div className="card" style={{ marginTop: "2rem" }}>
+              <h3>Post-Quantum Migration Recommendations</h3>
+
+              {asset.recommendations.map((r, i) => (
+                <div key={i} style={{ marginBottom: "1rem" }}>
+                  <strong>{r.component}</strong>
+
+                  <p>
+                    Current: <code>{r.current}</code>
+                  </p>
+
+                  <p>
+                    Recommended: <code>{r.recommended}</code>
+                  </p>
+
+                  <p>
+                    Hybrid: <code>{r.hybrid_option}</code>
+                  </p>
+
+                  <p style={{ color: "var(--text-muted)" }}>
+                    {r.rationale}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* RAW JSON */}
+          <details style={{ marginTop: "2rem" }}>
+            <summary>Raw CBOM Data</summary>
+            <pre>
               {JSON.stringify(cbom, null, 2)}
             </pre>
           </details>
+
         </motion.div>
       </div>
     </div>

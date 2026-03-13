@@ -1,259 +1,285 @@
 // PQC Classifier utility
-export const PQC_ALGORITHMS = {
-  KEM: ['ML-KEM-512', 'ML-KEM-768', 'ML-KEM-1024', 'KYBER-512', 'KYBER-768', 'KYBER-1024'],
-  SIGNATURE: ['ML-DSA-44', 'ML-DSA-65', 'ML-DSA-87', 'DILITHIUM', 'SLH-DSA', 'SPHINCS'],
-  HASH: ['SHA-256', 'SHA-384', 'SHA-512', 'SHA3-256'],
-};
 
-export const VULNERABLE_ALGORITHMS = {
-  KEM: ['RSA', 'ECDH', 'ECDHE', 'DH', 'DHE', 'PSK'],
-  SIGNATURE: ['RSA-PKCS1', 'ECDSA', 'DSA'],
-  CIPHER: ['RC4', 'DES', '3DES', 'RC2', 'DES-CBC'],
-  HASH: ['MD5', 'SHA-1', 'MD4'],
-  TLS_VERSION: ['SSLv2', 'SSLv3', 'TLS 1.0', 'TLS 1.1'],
-};
 
 export function classifyPQCStatus(asset) {
-  const {
-    tls_version,
-    cipher_analysis,
-    certificate,
-    quantum_risk_level,
-    pqc_status,
-  } = asset;
+  const pqc =
+    asset?.quantum_assessment?.pqc_status ||
+    asset?.pqc_status ||
+    "UNKNOWN";
 
-  // Extract key exchange and signature algorithms
-  const keyExchange = cipher_analysis?.key_exchange?.algorithm || '';
-  const authentication = cipher_analysis?.authentication?.algorithm || '';
-  const cipherSuite = asset.cipher_suite || '';
+  const map = {
+    PQC_READY: {
+      label: "🟢 PQC Ready",
+      color: "safe",
+      description: "Quantum safe algorithms detected",
+    },
 
-  // Check for critical vulnerabilities
-  if (VULNERABLE_ALGORITHMS.TLS_VERSION.some(v => tls_version?.includes(v))) {
-    return {
-      status: 'CRITICAL',
-      label: '🔴 CRITICAL',
-      color: 'danger',
-      description: `${tls_version} is end-of-life and should be disabled immediately`,
-    };
-  }
+    HYBRID_PQC: {
+      label: "🔄 Hybrid PQC",
+      color: "warning",
+      description: "Hybrid PQC deployment detected",
+    },
 
-  // Check for dangerous ciphers
-  if (VULNERABLE_ALGORITHMS.CIPHER.some(c => cipherSuite?.includes(c))) {
-    return {
-      status: 'CRITICAL',
-      label: '🔴 CRITICAL',
-      color: 'danger',
-      description: 'Deprecated cipher suite detected',
-    };
-  }
+    MIGRATION_NEEDED: {
+      label: "🟠 Migration Needed",
+      color: "warning",
+      description: "Post-quantum migration required",
+    },
 
-  // Check for PQC algorithms (future-proof)
-  const hasPQCKEM = PQC_ALGORITHMS.KEM.some(alg =>
-    cipherSuite?.includes(alg) || keyExchange?.includes(alg)
-  );
-  const hasPQCSig = PQC_ALGORITHMS.SIGNATURE.some(alg =>
-    certificate?.sig_algo?.includes(alg) || authentication?.includes(alg)
-  );
+    CRITICAL: {
+      label: "🔴 Critical",
+      color: "danger",
+      description: "Critical cryptographic vulnerability",
+    },
 
-  if (hasPQCKEM && hasPQCSig && tls_version === 'TLSv1.3') {
-    return {
-      status: 'PQC_READY',
-      label: '✅ PQC Ready',
-      color: 'safe',
-      description: 'Quantum-safe algorithms detected',
-    };
-  }
-
-  // Check for hybrid mode
-  if ((hasPQCKEM || hasPQCSig) && tls_version === 'TLSv1.3') {
-    return {
-      status: 'HYBRID_PQC',
-      label: '🔄 Hybrid PQC',
-      color: 'warning',
-      description: 'Partially quantum-safe (hybrid mode)',
-    };
-  }
-
-  // Modern but not yet PQC
-  if (tls_version === 'TLSv1.3' && !VULNERABLE_ALGORITHMS.KEM.includes(keyExchange)) {
-    return {
-      status: 'SAFE_CLASSICAL',
-      label: '⚠️ Classical Only',
-      color: 'warning',
-      description: 'Secure but not quantum-safe. PQC migration needed by 2027.',
-    };
-  }
-
-  // TLS 1.2 or older with classical algorithms
-  if (tls_version === 'TLSv1.2' || tls_version === 'TLSv1.1') {
-    return {
-      status: 'MIGRATION_NEEDED',
-      label: '🟠 Migration Needed',
-      color: 'warning',
-      description: 'Upgrade to TLS 1.3 with post-quantum algorithms required',
-    };
-  }
+    UNKNOWN: {
+      label: "❓ Unknown",
+      color: "info",
+      description: "Status could not be determined",
+    },
+  };
 
   return {
-    status: 'UNKNOWN',
-    label: '❓ Unknown',
-    color: 'info',
-    description: 'Status could not be determined',
+    status: pqc,
+    ...(map[pqc] || map.UNKNOWN),
   };
 }
 
-// Risk Scoring utility
-const RISK_WEIGHTS = {
-  keyExchange: 0.35,
-  authentication: 0.20,
-  tlsVersion: 0.15,
-  encryption: 0.15,
-  certificate: 0.10,
-  forwardSecrecy: 0.05,
-};
+
 
 export function calculateRiskScore(asset) {
-  let score = 100; // Start at lowest risk
-  const {
-    tls_version,
-    cipher_analysis,
-    certificate,
-    quantum_risk_score,
-  } = asset;
-
-  // TLS Version score
-  if (VULNERABLE_ALGORITHMS.TLS_VERSION.some(v => tls_version?.includes(v))) {
-    score -= 50 * RISK_WEIGHTS.tlsVersion;
-  } else if (tls_version === 'TLSv1.3') {
-    score -= 5 * RISK_WEIGHTS.tlsVersion;
-  } else if (tls_version === 'TLSv1.2') {
-    score -= 15 * RISK_WEIGHTS.tlsVersion;
-  }
-
-  // Key Exchange score
-  const keyExchange = cipher_analysis?.key_exchange?.algorithm || '';
-  if (PQC_ALGORITHMS.KEM.some(alg => keyExchange?.includes(alg))) {
-    score -= 0;
-  } else if (keyExchange.includes('DHE') || keyExchange.includes('ECDHE')) {
-    score -= 25 * RISK_WEIGHTS.keyExchange;
-  } else if (keyExchange === 'RSA') {
-    score -= 40 * RISK_WEIGHTS.keyExchange;
-  }
-
-  // Forward Secrecy
-  if (!cipher_analysis?.forward_secrecy) {
-    score -= 20 * RISK_WEIGHTS.forwardSecrecy;
-  }
-
-  // Certificate validity
-  if (certificate && certificate.days_until_expiry < 30) {
-    score -= 15;
-  }
-  if (certificate && certificate.is_expired) {
-    score -= 50;
-  }
-
-  return Math.max(0, Math.min(100, score));
+  return (
+    asset?.quantum_assessment?.risk_score ??
+    asset?.quantum_risk_score ??
+    0
+  );
 }
 
-export function getRiskLevel(score) {
-  if (score >= 80) return { level: 'SAFE', color: 'safe', icon: '✅' };
-  if (score >= 60) return { level: 'MEDIUM', color: 'warning', icon: '⚠️' };
-  if (score >= 40) return { level: 'HIGH', color: 'warning', icon: '🟠' };
-  return { level: 'CRITICAL', color: 'danger', icon: '🔴' };
-}
 
-export function formatRiskBadge(score) {
-  const { level, color, icon } = getRiskLevel(score);
+
+export function getRiskLevel(asset) {
+  const level =
+    asset?.quantum_assessment?.risk_level ||
+    asset?.quantum_risk_level ||
+    "UNKNOWN";
+
+  const map = {
+    SAFE: { color: "safe", icon: "✅" },
+    LOW: { color: "info", icon: "🟢" },
+    MEDIUM: { color: "warning", icon: "⚠️" },
+    HIGH: { color: "warning", icon: "🟠" },
+    CRITICAL: { color: "danger", icon: "🔴" },
+  };
+
   return {
-    label: `${icon} ${level}`,
-    color,
-    score: Math.round(score),
+    level,
+    ...(map[level] || { color: "info", icon: "❓" }),
   };
 }
 
-// Format certificate data for display
+
+
 export function formatCertificate(cert) {
   if (!cert) return null;
 
   return {
-    subject: cert.subject?.commonName || 'Unknown',
-    issuer: cert.issuer?.organizationName || 'Unknown',
-    validFrom: cert.validity?.not_before || 'N/A',
-    validUntil: cert.validity?.not_after || 'N/A',
-    daysUntilExpiry: cert.validity?.days_until_expiry || -1,
-    isExpired: cert.validity?.is_expired || false,
-    serialNumber: cert.serial_number || 'N/A',
-    sha256: cert.fingerprints?.sha256 || 'N/A',
-    signatureAlgorithm: cert.signature_algorithm || 'N/A',
-    publicKeySize: cert.public_key?.bits || 'Unknown',
-    publicKeyAlgorithm: cert.public_key?.algorithm || 'Unknown',
-    sans: cert.san || [],
-    deprecated: cert.validity?.is_expired || false,
+    subject: cert?.subject?.commonName || "Unknown",
+    issuer: cert?.issuer?.organizationName || "Unknown",
+    validFrom: cert?.validity?.not_before,
+    validUntil: cert?.validity?.not_after,
+    daysUntilExpiry: cert?.validity?.days_until_expiry,
+    isExpired: cert?.validity?.is_expired,
+    sans: cert?.san || [],
+    sha256: cert?.fingerprint_sha256,
   };
 }
 
-// CBOM Data formatter
+
+
+/* ---------------------------------------------------
+   Weak crypto indicators for banking security
+--------------------------------------------------- */
+
+const WEAK_TLS = ["SSLV3", "TLSV1.0", "TLSV1.1"];
+
+const WEAK_CIPHERS = [
+  "RC4",
+  "DES",
+  "3DES",
+  "MD5",
+  "NULL",
+  "EXPORT",
+  "RC2"
+];
+
+
+function normalize(str) {
+  return String(str || "").toUpperCase().replace(/\s/g, "");
+}
+
+
+function isWeakTLS(version) {
+  if (!version) return false;
+
+  const v = normalize(version);
+
+  return WEAK_TLS.some(t => v.includes(t));
+}
+
+
+function isWeakCipher(cipher) {
+  if (!cipher) return false;
+
+  const c = cipher.toUpperCase();
+
+  return WEAK_CIPHERS.some(w => c.includes(w));
+}
+
+
+
+/* ---------------------------------------------------
+   Format CBOM for frontend
+--------------------------------------------------- */
+
 export function formatCBOMData(cbom) {
   if (!cbom) return null;
 
-  const {
-    metadata,
-    summary,
-    crypto_assets = [],
-  } = cbom;
+  const assets = cbom.crypto_assets || [];
 
-  const totalAssets = crypto_assets.length;
-  const criticalCount = crypto_assets.filter(a => {
-    const pqc = classifyPQCStatus(a);
-    return pqc.status === 'CRITICAL';
+  const formattedAssets = assets.map(asset => {
+
+    const tls = asset?.tls_configuration?.protocol_version || null;
+    const cipher = asset?.tls_configuration?.negotiated_cipher || null;
+
+    const riskScore = calculateRiskScore(asset);
+    const pqc = classifyPQCStatus(asset);
+    const riskLevel = getRiskLevel(asset);
+
+    const cert = formatCertificate(asset.certificate_info);
+
+    return {
+      ...asset,
+
+      tls_version: tls,
+
+      cipher_suite: cipher,
+
+      pqcClassification: pqc,
+
+      riskScore: riskScore,
+
+      riskLevel: riskLevel,
+
+      formattedCert: cert,
+
+      threatTimeline:
+        asset?.quantum_assessment?.threat_assessment
+          ?.estimated_quantum_threat,
+
+      migrationDeadline:
+        asset?.quantum_assessment?.threat_assessment
+          ?.migration_deadline,
+
+      urgency:
+        asset?.quantum_assessment?.threat_assessment
+          ?.urgency,
+    };
+  });
+
+
+
+  /* ---------------------------------------------------
+     Stats Calculation
+  --------------------------------------------------- */
+
+  const criticalCount = formattedAssets.filter(asset => {
+
+    const riskScore = asset.riskScore;
+    const pqcStatus = asset.pqcClassification?.status;
+    const tls = asset.tls_version;
+    const cipher = asset.cipher_suite;
+    const expired = asset.formattedCert?.isExpired;
+
+    return (
+      riskScore >= 90 ||           // extreme quantum risk
+      pqcStatus === "CRITICAL" ||  // PQC failure
+      isWeakTLS(tls) ||            // deprecated TLS
+      isWeakCipher(cipher) ||      // weak cipher
+      expired                      // expired certificate
+    );
+
   }).length;
 
-  const pqcReadyCount = crypto_assets.filter(a => {
-    const pqc = classifyPQCStatus(a);
-    return pqc.status === 'PQC_READY';
-  }).length;
+
+
+  const pqcReadyCount = formattedAssets.filter(
+    a => a.pqcClassification?.status === "PQC_READY"
+  ).length;
+
+
+
+  const migrationNeeded = formattedAssets.filter(
+    a => a.pqcClassification?.status === "MIGRATION_NEEDED"
+  ).length;
+
+
 
   return {
-    metadata,
-    summary,
-    crypto_assets: crypto_assets.map(asset => ({
-      ...asset,
-      pqcClassification: classifyPQCStatus(asset),
-      riskScore: calculateRiskScore(asset),
-      formattedCert: formatCertificate(asset.certificate),
-    })),
+
+    metadata: cbom.metadata,
+
+    summary: cbom.summary,
+
+    crypto_assets: formattedAssets,
+
+    risk_matrix: cbom.risk_matrix || [],
+
+    pqc_migration_plan: cbom.pqc_migration_plan || {},
+
+
     stats: {
-      totalAssets,
-      criticalCount,
-      pqcReadyCount,
-      mitigationNeeded: totalAssets - pqcReadyCount,
+
+      totalAssets:
+        cbom.metadata?.total_assets_scanned ||
+        formattedAssets.length,
+
+      criticalCount: criticalCount,
+
+      pqcReadyCount: pqcReadyCount,
+
+      mitigationNeeded: migrationNeeded,
+
     },
   };
 }
 
+
+
+/* ---------------------------------------------------
+   Quantum Readiness Score
+--------------------------------------------------- */
+
 export function calculateQuantumReadinessScore(cbom) {
-  if (!cbom || !cbom.crypto_assets) return 0;
+  if (!cbom?.crypto_assets) return 0;
 
-  const assets = cbom.crypto_assets;
-  if (assets.length === 0) return 0;
+  const total = cbom.crypto_assets.length;
 
-  const pqcReady = assets.filter(a => {
-    const pqc = classifyPQCStatus(a);
-    return pqc.status === 'PQC_READY';
-  }).length;
+  if (total === 0) return 0;
 
-  return Math.round((pqcReady / assets.length) * 100);
+  const ready = cbom.crypto_assets.filter(
+    a => a.pqcClassification?.status === "PQC_READY"
+  ).length;
+
+  return Math.round((ready / total) * 100);
 }
+
+
 
 export default {
   classifyPQCStatus,
   calculateRiskScore,
   getRiskLevel,
-  formatRiskBadge,
   formatCertificate,
   formatCBOMData,
   calculateQuantumReadinessScore,
-  PQC_ALGORITHMS,
-  VULNERABLE_ALGORITHMS,
 };

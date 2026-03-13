@@ -1,11 +1,26 @@
 import React from 'react';
 
 export function RiskBadge({ score, size = 'md' }) {
+
   const getRiskLevel = (score) => {
-    if (score >= 80) return { label: 'SAFE', color: 'safe', icon: '✅' };
-    if (score >= 60) return { label: 'MEDIUM', color: 'warning', icon: '⚠️' };
-    if (score >= 40) return { label: 'HIGH', color: 'warning', icon: '🟠' };
-    return { label: 'CRITICAL', color: 'danger', icon: '🔴' };
+
+    if (score >= 90) {
+      return { label: 'CRITICAL', color: 'danger', icon: '🔴' };
+    }
+
+    if (score >= 80) {
+      return { label: 'VERY HIGH', color: 'danger', icon: '🟥' };
+    }
+
+    if (score >= 60) {
+      return { label: 'HIGH', color: 'warning', icon: '🟠' };
+    }
+
+    if (score >= 40) {
+      return { label: 'MEDIUM', color: 'warning', icon: '⚠️' };
+    }
+
+    return { label: 'SAFE', color: 'safe', icon: '✅' };
   };
 
   const { label, color, icon } = getRiskLevel(score);
@@ -18,7 +33,7 @@ export function RiskBadge({ score, size = 'md' }) {
 
   return (
     <span className={`badge badge-${color}`} style={sizeStyles[size]}>
-      {icon} {label}
+      {icon} {label} ({Number(score).toFixed(1)})
     </span>
   );
 }
@@ -69,7 +84,7 @@ export function CopyButton({ text, label = 'Copy' }) {
   };
 
   return (
-    <button 
+    <button
       onClick={handleCopy}
       className="btn btn-sm btn-secondary"
       title={text}
@@ -94,7 +109,7 @@ export function ExportButton({ data, format = 'json', filename = 'export' }) {
   };
 
   return (
-    <button 
+    <button
       onClick={handleExport}
       className="btn btn-sm btn-primary"
     >
