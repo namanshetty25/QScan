@@ -25,7 +25,11 @@ pip install -r requirements.txt
 cd .. && pip install -e . && cd qscan-backend
 qscan --help
 
-# 4. Start the server
+# 4. Configure redis creds in .env file
+# See config.py for available options
+vim .env
+
+# 5. Start the server
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
