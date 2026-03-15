@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useScanResults } from "../hooks/useScan";
 import { motion } from "framer-motion";
+
 import {
   SkeletonCard,
   EmptyState,
@@ -16,7 +17,7 @@ import "./pages.css";
 
 function Results() {
   const { scanId } = useParams();
-  const { cbom, loading, error } = useScanResults(scanId);
+  const { cbom, scanResults, loading, error } = useScanResults(scanId);
 
   if (loading) {
     return (
@@ -55,15 +56,15 @@ function Results() {
     readinessScore >= 80
       ? "Quantum Ready"
       : readinessScore >= 50
-        ? "Partial PQC"
-        : "Not Ready";
+      ? "Partial PQC"
+      : "Not Ready";
 
   const readinessColor =
     readinessScore >= 80
       ? "var(--accent-safe)"
       : readinessScore >= 50
-        ? "orange"
-        : "red";
+      ? "orange"
+      : "red";
 
   return (
     <div style={{ minHeight: "100vh" }}>
@@ -78,10 +79,7 @@ function Results() {
             </p>
           </div>
 
-          {/* ------------------------------
-              QUANTUM READINESS GAUGE
-          ------------------------------- */}
-
+          {/* QUANTUM READINESS */}
           <div
             className="card"
             style={{
@@ -112,7 +110,7 @@ function Results() {
 
             <div className="metric-card">
               <div className="metric-value">
-                {cbom.stats.totalAssets}
+                {cbom.stats?.totalAssets ?? 0}
               </div>
               <div className="metric-label">
                 Total Assets
@@ -124,7 +122,7 @@ function Results() {
               style={{ borderLeft: "4px solid red" }}
             >
               <div className="metric-value">
-                {cbom.stats.criticalCount}
+                {cbom.stats?.criticalCount ?? 0}
               </div>
               <div className="metric-label">
                 Critical Vulnerabilities
@@ -136,7 +134,7 @@ function Results() {
               style={{ borderLeft: "4px solid green" }}
             >
               <div className="metric-value">
-                {cbom.stats.pqcReadyCount}
+                {cbom.stats?.pqcReadyCount ?? 0}
               </div>
               <div className="metric-label">
                 PQC Ready
@@ -154,42 +152,88 @@ function Results() {
                   <th>TLS</th>
                   <th>Cipher</th>
                   <th>PQC Status</th>
-                  <th>Risk</th>
+                  <th>Rule Risk</th>
+                  <th>AI Risk</th>
+                  <th>Anomaly</th>
                 </tr>
               </thead>
 
               <tbody>
-                {cbom.crypto_assets.map((asset, idx) => (
-                  <tr key={idx}>
+                {cbom.crypto_assets?.map((asset, idx) => {
 
-                    <td>
-                      <code>
-                        {asset.host}:{asset.port}
-                      </code>
-                    </td>
+                  const mlScore = scanResults?.[idx]?.ml_risk_score;
+                  const anomaly = scanResults?.[idx]?.anomaly_detection;
 
-                    <td>
-                      <TLSVersionBadge
-                        version={asset.tls_version}
-                      />
-                    </td>
+                  return (
+                    <tr key={idx}>
 
-                    <td>
-                      <code>{asset.cipher_suite}</code>
-                    </td>
+                      <td>
+                        <code>
+                          {asset.host}:{asset.port}
+                        </code>
+                      </td>
 
-                    <td>
-                      <PQCStatusPill
-                        status={asset.pqcClassification.status}
-                      />
-                    </td>
+                      <td>
+                        <TLSVersionBadge
+                          version={asset.tls_version}
+                        />
+                      </td>
 
-                    <td>
-                      <RiskBadge score={asset.riskScore} />
-                    </td>
+                      <td>
+                        <code>{asset.cipher_suite}</code>
+                      </td>
 
-                  </tr>
-                ))}
+                      <td>
+                        <PQCStatusPill
+                          status={asset.pqcClassification?.status}
+                        />
+                      </td>
+
+                      <td>
+                        <RiskBadge score={asset.riskScore} />
+                      </td>
+
+                      {/* ML RISK SCORE */}
+                      <td>
+                        {mlScore !== undefined
+                          ? mlScore.toFixed(1)
+                          : "-"}
+                      </td>
+
+                      {/* ANOMALY */}
+                     <td>
+  {scanResults?.[idx]?.anomaly_detection ? (
+    <div style={{ fontSize: "0.85rem" }}>
+      <div>
+        {scanResults[idx].anomaly_detection.is_anomaly
+          ? "⚠️ Anomaly"
+          : "Normal"}
+      </div>
+
+      <div style={{ color: "var(--text-muted)" }}>
+        Score:{" "}
+        {scanResults[idx].anomaly_detection.anomaly_score?.toFixed(2) ?? "-"}
+      </div>
+
+      <div style={{ color: "var(--text-muted)" }}>
+        Confidence:{" "}
+        {scanResults[idx].anomaly_detection.confidence ?? "-"}
+      </div>
+
+      {scanResults[idx].anomaly_detection.reasons?.length > 0 && (
+        <div style={{ color: "orange" }}>
+          {scanResults[idx].anomaly_detection.reasons.join(", ")}
+        </div>
+      )}
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
+
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -280,9 +324,7 @@ function Results() {
           {/* RAW JSON */}
           <details style={{ marginTop: "2rem" }}>
             <summary>Raw CBOM Data</summary>
-            <pre>
-              {JSON.stringify(cbom, null, 2)}
-            </pre>
+            <pre>{JSON.stringify(cbom, null, 2)}</pre>
           </details>
 
         </motion.div>
