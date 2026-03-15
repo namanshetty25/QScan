@@ -353,8 +353,7 @@ Each asset receives:
 | **Backend API** | FastAPI, Uvicorn, Pydantic |
 | **Cache/Store** | Redis (async via redis-py) |
 | **Frontend** | React 19, React Router, Recharts, Framer Motion, Axios |
-| **PDF Export** | jsPDF, html2canvas |
-| **UI** | Lucide React icons, React Hot Toast |
+| **UI** | Lucide React icons , interqactive designs
 
 ---
 
@@ -376,7 +375,6 @@ Each asset receives:
 - [x] Certificate information viewer
 - [x] Scan history & management
 - [x] Real-time scan progress tracking
-- [x] PDF report export capability
 
 ---
 
