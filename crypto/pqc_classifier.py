@@ -240,6 +240,17 @@ class PQCClassifier:
                 "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
             })
 
+            # TLS 1.3 still needs PQC hybrid KEM
+            if tls == "TLSv1.3":
+                recs.append({
+                    "component": "Key Exchange",
+                    "current": "ECDHE (TLS 1.3)",
+                    "recommended": "ML-KEM-768 (Kyber)",
+                    "priority": "MEDIUM",
+                    "hybrid_option": "X25519+ML-KEM-768",
+                    "rationale": "TLS 1.3 still relies on ECDHE which is vulnerable to Shor's algorithm. Deploy hybrid PQC key exchange."
+                })
+
         return recs
 
     def _assess_threat_timeline(self, result: Dict) -> Dict:

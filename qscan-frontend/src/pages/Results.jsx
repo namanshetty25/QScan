@@ -102,7 +102,7 @@ function Results() {
 
             <div className="metric-card">
               <div className="metric-value">
-                {cbom.stats.totalAssets}
+                {cbom.summary?.total_assets || 0}
               </div>
               <div className="metric-label">
                 Total Assets
@@ -114,7 +114,7 @@ function Results() {
               style={{ borderLeft: "4px solid red" }}
             >
               <div className="metric-value">
-                {cbom.stats.criticalCount}
+                {cbom.summary?.risk_distribution?.CRITICAL || 0}
               </div>
               <div className="metric-label">
                 Critical Vulnerabilities
@@ -126,7 +126,7 @@ function Results() {
               style={{ borderLeft: "4px solid green" }}
             >
               <div className="metric-value">
-                {cbom.stats.pqcReadyCount}
+                {cbom.summary?.pqc_status_distribution?.PQC_READY || 0}
               </div>
               <div className="metric-label">
                 PQC Ready
@@ -148,7 +148,7 @@ function Results() {
               </thead>
 
               <tbody>
-                {cbom.crypto_assets.map((asset, idx) => (
+                {cbom.crypto_assets?.map((asset, idx) => (
                   <tr key={idx}>
 
                     <td>
@@ -159,22 +159,26 @@ function Results() {
 
                     <td>
                       <TLSVersionBadge
-                        version={asset.tls_version}
+                        version={asset.tls_configuration?.protocol_version || "UNKNOWN"}
                       />
                     </td>
 
                     <td>
-                      <code>{asset.cipher_suite}</code>
+                      <code>
+                        {asset.tls_configuration?.negotiated_cipher || "Unknown"}
+                      </code>
                     </td>
 
                     <td>
                       <PQCStatusPill
-                        status={asset.pqcClassification.status}
+                        status={asset.quantum_assessment?.pqc_status}
                       />
                     </td>
 
                     <td>
-                      <RiskBadge score={asset.riskScore} />
+                      <RiskBadge
+                        score={asset.quantum_assessment?.risk_score}
+                      />
                     </td>
 
                   </tr>
@@ -184,7 +188,7 @@ function Results() {
           </div>
 
           {/* -------------------------
-              RISK MATRIX (NEW)
+              RISK MATRIX
           -------------------------- */}
 
           {cbom.risk_matrix && cbom.risk_matrix.length > 0 && (
@@ -223,48 +227,48 @@ function Results() {
 
               <p>
                 <strong>Estimated Quantum Threat:</strong>{" "}
-                {asset.threatTimeline}
+                {asset.quantum_assessment?.threat_assessment?.estimated_quantum_threat}
               </p>
 
               <p>
                 <strong>Migration Deadline:</strong>{" "}
-                {asset.migrationDeadline}
+                {asset.quantum_assessment?.threat_assessment?.migration_deadline}
               </p>
 
               <p>
                 <strong>Urgency:</strong>{" "}
-                {asset.urgency}
+                {asset.quantum_assessment?.threat_assessment?.urgency}
               </p>
             </div>
           )}
 
-          {asset?.formattedCert && (
+          {asset?.certificate_info && (
             <div className="card" style={{ marginTop: "2rem" }}>
               <h3>Certificate Information</h3>
 
               <p>
                 <strong>Subject:</strong>{" "}
-                {asset.formattedCert.subject}
+                {asset.certificate_info?.subject?.commonName}
               </p>
 
               <p>
                 <strong>Issuer:</strong>{" "}
-                {asset.formattedCert.issuer}
+                {asset.certificate_info?.issuer?.organizationName}
               </p>
 
               <p>
                 <strong>Valid From:</strong>{" "}
-                {asset.formattedCert.validFrom}
+                {asset.certificate_info?.validity?.not_before}
               </p>
 
               <p>
                 <strong>Valid Until:</strong>{" "}
-                {asset.formattedCert.validUntil}
+                {asset.certificate_info?.validity?.not_after}
               </p>
 
               <p>
                 <strong>Days Until Expiry:</strong>{" "}
-                {asset.formattedCert.daysUntilExpiry}
+                {asset.certificate_info?.validity?.days_until_expiry}
               </p>
             </div>
           )}
@@ -297,10 +301,6 @@ function Results() {
             </div>
           )}
 
-          {/* -------------------------
-              PQC MIGRATION PLAN (NEW)
-          -------------------------- */}
-
           {cbom.pqc_migration_plan && (
             <div className="card" style={{ marginTop: "2rem" }}>
               <h3>PQC Migration Plan</h3>
@@ -322,6 +322,7 @@ function Results() {
                   {a.host}:{a.port} → {a.component}
                 </p>
               ))}
+
             </div>
           )}
 
