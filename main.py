@@ -17,20 +17,13 @@ from config.settings import Settings
 from scanner.asset_discovery import AssetDiscovery
 from scanner.tls_scanner import TLSScanner
 from scanner.port_scanner import PortScanner
-
 from crypto.cipher_parser import CipherParser
 from crypto.pqc_classifier import PQCClassifier
-
 from cbom.cbom_generator import CBOMGenerator
-
 from utils.logger import setup_logger, get_logger
 
 logger = get_logger(__name__)
 
-
-# ─────────────────────────────────────────────
-# CLI ARGUMENTS
-# ─────────────────────────────────────────────
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -56,31 +49,16 @@ def parse_arguments():
     return parser.parse_args()
 
 
-# ─────────────────────────────────────────────
-# BANNER
-# ─────────────────────────────────────────────
-
 def banner():
     print(
-r"""
-╔══════════════════════════════════════════════╗
-║                                              ║
-║   ██████  ███████  ██████  █████  ███    ██  ║
-║  ██    ██ ██      ██      ██   ██ ████   ██  ║
-║  ██    ██ ███████ ██      ███████ ██ ██  ██  ║
-║  ██ ▄▄ ██      ██ ██      ██   ██ ██  ██ ██  ║
-║   ██████  ███████  ██████ ██   ██ ██   ████  ║
-║      ▀▀                                      ║
-║  Quantum Readiness Assessment Platform       ║
-║                                              ║
-╚══════════════════════════════════════════════╝
+        r"""
+╔═══════════════════════════════════════════════════════╗
+║   QScan — Quantum Readiness Assessment Platform       ║
+║   v1.0.0 — PNB Cybersecurity Hackathon 2025           ║
+╚═══════════════════════════════════════════════════════╝
 """
-)
+    )
 
-
-# ─────────────────────────────────────────────
-# MAIN PIPELINE
-# ─────────────────────────────────────────────
 
 def run_pipeline(args):
 
@@ -91,11 +69,9 @@ def run_pipeline(args):
     )
 
     domain = args.domain
-
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     output_dir = args.output or os.path.join("results", f"{domain}_{timestamp}")
-
     os.makedirs(output_dir, exist_ok=True)
 
     all_scan_results = []
@@ -118,10 +94,9 @@ def run_pipeline(args):
         discovered_assets = discovery.discover(domain)
 
         targets.extend(discovered_assets)
-
         targets = list(set(targets))
 
-        logger.info(f"✓ Found {len(targets)} targets")
+        logger.info(f"  ✓ Discovered {len(targets)} unique targets")
 
         with open(os.path.join(output_dir, "discovered_assets.json"), "w") as f:
             json.dump(
@@ -131,8 +106,7 @@ def run_pipeline(args):
             )
 
     else:
-
-        logger.info("[Phase 1] Skipping discovery")
+        logger.info(f"[Phase 1] Skipping asset discovery — scanning {domain} only")
 
     # ─────────────────────────────────────────────
     # Phase 2 — Port Scanning (PARALLEL)
@@ -178,11 +152,9 @@ def run_pipeline(args):
     tls_scanner = TLSScanner(settings)
 
     scanned_hosts = set()
-
     scan_jobs = []
 
     for target, ports in port_results.items():
-
         for port in ports:
             if (target, port) not in scanned_hosts:
                 scan_jobs.append((target, port))
@@ -219,7 +191,6 @@ def run_pipeline(args):
                             targets.append(san)
                             san_jobs.append(san)
 
-                    # parallel SAN port scanning
                     with ThreadPoolExecutor(max_workers=settings.max_threads) as san_executor:
 
                         san_futures = {
@@ -267,9 +238,8 @@ def run_pipeline(args):
         if tls_result:
             all_scan_results.append(tls_result)
 
-
     # ─────────────────────────────────────────────
-    # Load AI Models
+    # AI MODEL LOADING
     # ─────────────────────────────────────────────
 
     logger.info("[AI] Loading models")
@@ -280,7 +250,6 @@ def run_pipeline(args):
     anomaly_detector = CryptoAnomalyDetector()
     anomaly_detector.load_model("ai_ml/models/anomaly_model.joblib")
 
-
     # ─────────────────────────────────────────────
     # Phase 4 — Crypto Parsing
     # ─────────────────────────────────────────────
@@ -288,7 +257,6 @@ def run_pipeline(args):
     logger.info(f"[Phase 4] Parsing cryptographic configurations")
 
     cipher_parser = CipherParser()
-
     pqc_classifier = PQCClassifier()
 
     parsed_results = []
@@ -299,26 +267,21 @@ def run_pipeline(args):
             parsed = cipher_parser.parse(result)
             classified = pqc_classifier.classify(parsed)
 
-            # ML Risk Prediction
             ml_score = risk_model.predict(classified)
             classified["ml_risk_score"] = ml_score
 
-            # Anomaly Detection
             anomaly = anomaly_detector.detect(classified)
             classified["anomaly_detection"] = anomaly
 
             parsed_results.append(classified)
 
             status = classified.get("pqc_status", "UNKNOWN")
-            rule_risk = classified.get("quantum_risk_level", "UNKNOWN")
+            risk = classified.get("quantum_risk_level", "UNKNOWN")
             anomaly_flag = anomaly.get("is_anomaly", False)
 
             logger.info(
-                f"  ✓ {classified['host']}:{classified['port']} "
-                f"| PQC:{status} "
-                f"| RuleRisk:{rule_risk} "
-                f"| MLRisk:{ml_score:.1f} "
-                f"| Anomaly:{anomaly_flag}"
+                f"  ✓ {classified['host']}:{classified['port']} — "
+                f"PQC:{status} | RuleRisk:{risk} | MLRisk:{ml_score:.1f} | Anomaly:{anomaly_flag}"
             )
 
         except Exception as e:
@@ -355,20 +318,16 @@ def run_pipeline(args):
     # ─────────────────────────────────────────────
 
     print("\n" + "=" * 60)
-
     print("SCAN SUMMARY")
-
     print("=" * 60)
 
     print(f"Domain:          {domain}")
     print(f"Targets Scanned: {len(targets)}")
     print(f"Assets Analyzed: {len(parsed_results)}")
-    print(f"Output:          {output_dir}")
 
     risk_counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "SAFE": 0}
 
     for r in parsed_results:
-
         level = r.get("quantum_risk_level")
 
         if level in risk_counts:
@@ -377,7 +336,6 @@ def run_pipeline(args):
     print("\nQuantum Risk Breakdown:")
 
     for level, count in risk_counts.items():
-
         if count > 0:
             print(f"{level:10s}: {count}")
 
@@ -388,15 +346,9 @@ def run_pipeline(args):
     print("=" * 60 + "\n")
 
 
-# ─────────────────────────────────────────────
-# ENTRYPOINT
-# ─────────────────────────────────────────────
-
 def main():
 
-    if sys.stdout.isatty():
-
-        banner()
+    banner()
 
     args = parse_arguments()
 
@@ -404,28 +356,19 @@ def main():
 
     setup_logger(level=log_level)
 
-    try:
+    logger.info(f"Starting QScan for domain: {args.domain}")
 
+    try:
         run_pipeline(args)
 
     except KeyboardInterrupt:
-
         logger.warning("Scan interrupted")
-
         sys.exit(1)
 
     except Exception as e:
-
         logger.error(f"Scan failed: {e}")
-
-        if args.verbose:
-
-            import traceback
-            traceback.print_exc()
-
         sys.exit(1)
 
 
 if __name__ == "__main__":
-
     main()
