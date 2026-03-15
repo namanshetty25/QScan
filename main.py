@@ -74,6 +74,9 @@ def run_pipeline(args):
 
     all_scan_results = []
 
+    # cache to prevent repeated port scans
+    port_cache = {}
+
     # ─────────────────────────────────────────────
     # Phase 1 — Asset Discovery
     # ─────────────────────────────────────────────
@@ -127,6 +130,8 @@ def run_pipeline(args):
             try:
                 open_ports = future.result()
 
+                port_cache[target] = open_ports
+
                 if open_ports:
                     port_results[target] = open_ports
 
@@ -176,21 +181,34 @@ def run_pipeline(args):
 
                     scanned_hosts.add((host, port))
 
-                    # SAN discovery
-
                     san_assets = tls_result.get("discovered_san_assets", [])
 
+                    san_jobs = []
+
                     for san in san_assets:
-
                         if san not in targets:
-
                             logger.info(f"  ↳ SAN discovered: {san}")
-
                             targets.append(san)
+                            san_jobs.append(san)
 
-                            open_ports = port_scanner.scan(san)
+                    # parallel SAN port scanning
+                    with ThreadPoolExecutor(max_workers=settings.max_threads) as san_executor:
 
-                            if open_ports:
+                        san_futures = {
+                            san_executor.submit(
+                                port_cache.get(san) or port_scanner.scan, san
+                            ): san
+                            for san in san_jobs
+                        }
+
+                        for san_future in as_completed(san_futures):
+
+                            san = san_futures[san_future]
+
+                            try:
+                                open_ports = san_future.result()
+
+                                port_cache[san] = open_ports
 
                                 for p in open_ports:
 
@@ -202,8 +220,10 @@ def run_pipeline(args):
 
                                         if san_result:
                                             all_scan_results.append(san_result)
-
                                             scanned_hosts.add((san, p))
+
+                            except Exception as e:
+                                logger.warning(f"SAN scan failed for {san}: {e}")
 
             except Exception as e:
                 logger.warning(f"TLS scan failed for {host}:{port}: {e}")
@@ -238,18 +258,17 @@ def run_pipeline(args):
             classified = pqc_classifier.classify(parsed)
             parsed_results.append(classified)
 
+            status = classified.get("pqc_status", "UNKNOWN")
+            risk = classified.get("quantum_risk_level", "UNKNOWN")
+
+            logger.info(
+                f"  ✓ {classified['host']}:{classified['port']} — PQC: {status} | Risk: {risk}"
+            )
+
         except Exception as e:
             logger.warning(
                 f"Crypto parsing failed for {result.get('host')}:{result.get('port')} — {e}"
             )
-
-        status = classified.get("pqc_status", "UNKNOWN")
-
-        risk = classified.get("quantum_risk_level", "UNKNOWN")
-
-        logger.info(
-            f"  ✓ {classified['host']}:{classified['port']} — PQC: {status} | Risk: {risk}"
-        )
 
     # ─────────────────────────────────────────────
     # Phase 5 — CBOM Generation
