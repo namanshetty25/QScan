@@ -182,6 +182,9 @@ class CbomResponse(BaseModel):
     metadata: Optional[dict]
     summary: Optional[dict]
     crypto_assets: Optional[list]
+    risk_matrix: Optional[list]
+    pqc_migration_plan: Optional[dict]
+
 
 
 class HealthResponse(BaseModel):
@@ -441,4 +444,6 @@ async def get_cbom(scan_id: str):
         "metadata": cbom.get("metadata"),
         "summary": cbom.get("summary"),
         "crypto_assets": cbom.get("crypto_assets"),
+        "risk_matrix": cbom.get("risk_matrix"),
+        "pqc_migration_plan": cbom.get("pqc_migration_plan"),
     }
