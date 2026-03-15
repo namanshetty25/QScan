@@ -1,0 +1,2984 @@
+{
+  "metadata": {
+    "organization_domain": "ibanking.pnb.bank.in",
+    "scan_timestamp": "20260315_191906",
+    "generated_at": "2026-03-15T13:50:10.078043+00:00",
+    "tool": "QScan Quantum Readiness Assessment Platform",
+    "tool_version": "1.0.0",
+    "total_assets_scanned": 11,
+    "cbom_hash": "612b12b6c8a052bb17642aea1c3ebcba74b4b9333ffc778d40bebd95ccc3bf94"
+  },
+  "summary": {
+    "total_assets": 11,
+    "average_risk_score": 62.1,
+    "risk_distribution": {
+      "CRITICAL": 0,
+      "HIGH": 8,
+      "MEDIUM": 0,
+      "LOW": 3,
+      "SAFE": 0
+    },
+    "pqc_status_distribution": {
+      "PQC_READY": 0,
+      "HYBRID_PQC": 0,
+      "MIGRATION_NEEDED": 11,
+      "CRITICAL": 0
+    },
+    "forward_secrecy_adoption": "11/11",
+    "cipher_surface": 106,
+    "weak_cipher_exposure": 0,
+    "overall_quantum_readiness": "NOT_READY"
+  },
+  "crypto_assets": [
+    {
+      "asset_id": "ASSET-0001-ibanking-pnb-bank-in-443",
+      "host": "ibanking.pnb.bank.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:18.368637+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0002-netpnb-com-443",
+      "host": "netpnb.com",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:32.254006+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0003-internetbanking-netpnb-com-443",
+      "host": "internetbanking.netpnb.com",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:36.103556+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0004-netbanking-netpnb-com-443",
+      "host": "netbanking.netpnb.com",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:40.360683+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.3",
+        "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.3",
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "TLS_AES_128_GCM_SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE/DHE",
+          "quantum_safe": false,
+          "note": "TLS 1.3 uses ephemeral key exchange (not in cipher name)"
+        },
+        "authentication": null,
+        "encryption": {
+          "algorithm": "AES-128-GCM",
+          "bits": 128,
+          "quantum_safe": true
+        },
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE/DHE)"
+        ],
+        "quantum_safe_components": [
+          "AES-128-GCM"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 1,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 14
+      },
+      "quantum_assessment": {
+        "risk_score": 30.8,
+        "risk_level": "LOW",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2035+",
+          "migration_deadline": "2030",
+          "urgency": "MONITOR"
+        }
+      },
+      "recommendations": [],
+      "tls_version": "TLSv1.3",
+      "cipher_suite": "TLS_AES_128_GCM_SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 30.8,
+      "riskLevel": {
+        "level": "LOW",
+        "color": "info",
+        "icon": "🟢"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2035+",
+      "migrationDeadline": "2030",
+      "urgency": "MONITOR"
+    },
+    {
+      "asset_id": "ASSET-0005-iretail-pnb-bank-in-443",
+      "host": "iretail.pnb.bank.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:43.921841+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.3",
+        "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.3",
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "TLS_AES_128_GCM_SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE/DHE",
+          "quantum_safe": false,
+          "note": "TLS 1.3 uses ephemeral key exchange (not in cipher name)"
+        },
+        "authentication": null,
+        "encryption": {
+          "algorithm": "AES-128-GCM",
+          "bits": 128,
+          "quantum_safe": true
+        },
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE/DHE)"
+        ],
+        "quantum_safe_components": [
+          "AES-128-GCM"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 1,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 14
+      },
+      "quantum_assessment": {
+        "risk_score": 30.8,
+        "risk_level": "LOW",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2035+",
+          "migration_deadline": "2030",
+          "urgency": "MONITOR"
+        }
+      },
+      "recommendations": [],
+      "tls_version": "TLSv1.3",
+      "cipher_suite": "TLS_AES_128_GCM_SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 30.8,
+      "riskLevel": {
+        "level": "LOW",
+        "color": "info",
+        "icon": "🟢"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2035+",
+      "migrationDeadline": "2030",
+      "urgency": "MONITOR"
+    },
+    {
+      "asset_id": "ASSET-0006-icorp-pnb-bank-in-443",
+      "host": "icorp.pnb.bank.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:47.403497+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0007-www-netpnb-com-443",
+      "host": "www.netpnb.com",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:51.415989+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0008-www-pnbibanking-in-443",
+      "host": "www.pnbibanking.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:55.782665+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0009-netbanking-pnbibanking-in-443",
+      "host": "netbanking.pnbibanking.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:49:59.472410+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.3",
+        "negotiated_cipher": "TLS_AES_128_GCM_SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.3",
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "TLS_AES_128_GCM_SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE/DHE",
+          "quantum_safe": false,
+          "note": "TLS 1.3 uses ephemeral key exchange (not in cipher name)"
+        },
+        "authentication": null,
+        "encryption": {
+          "algorithm": "AES-128-GCM",
+          "bits": 128,
+          "quantum_safe": true
+        },
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE/DHE)"
+        ],
+        "quantum_safe_components": [
+          "AES-128-GCM"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 1,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 14
+      },
+      "quantum_assessment": {
+        "risk_score": 30.8,
+        "risk_level": "LOW",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2035+",
+          "migration_deadline": "2030",
+          "urgency": "MONITOR"
+        }
+      },
+      "recommendations": [],
+      "tls_version": "TLSv1.3",
+      "cipher_suite": "TLS_AES_128_GCM_SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 30.8,
+      "riskLevel": {
+        "level": "LOW",
+        "color": "info",
+        "icon": "🟢"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2035+",
+      "migrationDeadline": "2030",
+      "urgency": "MONITOR"
+    },
+    {
+      "asset_id": "ASSET-0010-pnbibanking-in-443",
+      "host": "pnbibanking.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:50:02.875574+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "asset_id": "ASSET-0011-internetbanking-pnbibanking-in-443",
+      "host": "internetbanking.pnbibanking.in",
+      "port": 443,
+      "scan_timestamp": "2026-03-15T13:50:06.465150+00:00",
+      "tls_configuration": {
+        "protocol_version": "TLSv1.2",
+        "negotiated_cipher": "ECDHE-RSA-AES128-GCM-SHA256",
+        "cipher_strength_bits": 128,
+        "supported_protocols": [
+          "TLSv1.2"
+        ],
+        "key_exchange": null
+      },
+      "certificate_info": {
+        "subject": {
+          "jurisdictionCountryName": "IN",
+          "businessCategory": "Government Entity",
+          "serialNumber": "Government Entity",
+          "countryName": "IN",
+          "stateOrProvinceName": "Delhi",
+          "localityName": "New Delhi",
+          "organizationName": "Punjab National Bank",
+          "commonName": "ibanking.pnb.bank.in"
+        },
+        "issuer": {
+          "countryName": "US",
+          "organizationName": "DigiCert Inc",
+          "commonName": "GeoTrust EV RSA CA G2"
+        },
+        "validity": {
+          "not_before": "Aug 21 00:00:00 2025 GMT",
+          "not_after": "Aug 20 23:59:59 2026 GMT",
+          "days_until_expiry": 158,
+          "is_expired": false
+        },
+        "fingerprint_sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb",
+        "san": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "chain_length": 0,
+        "chain_details": []
+      },
+      "cipher_analysis": {
+        "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+        "key_exchange": {
+          "algorithm": "ECDHE",
+          "quantum_safe": false,
+          "family": "ECC"
+        },
+        "authentication": {
+          "algorithm": "RSA",
+          "quantum_safe": false
+        },
+        "encryption": null,
+        "mac": {
+          "algorithm": "SHA-256",
+          "bits": 256
+        },
+        "forward_secrecy": true,
+        "quantum_vulnerable_components": [
+          "Key Exchange (ECDHE)",
+          "Authentication (RSA)"
+        ],
+        "quantum_safe_components": [
+          "Forward Secrecy"
+        ]
+      },
+      "crypto_summary": {
+        "total_quantum_vulnerable": 2,
+        "total_quantum_safe": 1,
+        "forward_secrecy": true,
+        "deprecated_protocols": [],
+        "weak_ciphers": [],
+        "strong_ciphers": [],
+        "cipher_diversity": 8
+      },
+      "quantum_assessment": {
+        "risk_score": 73.8,
+        "risk_level": "HIGH",
+        "pqc_status": "MIGRATION_NEEDED",
+        "threat_assessment": {
+          "hndl_risk": "MEDIUM",
+          "hndl_explanation": "Forward secrecy provides partial HNDL protection but key exchange remains quantum-vulnerable.",
+          "estimated_quantum_threat": "2030-2035",
+          "migration_deadline": "2027",
+          "urgency": "NEAR-TERM"
+        }
+      },
+      "recommendations": [
+        {
+          "component": "Key Exchange",
+          "current": "ECDHE",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "MEDIUM",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "Authentication",
+          "current": "RSA",
+          "recommended": "ML-KEM-768 (Kyber)",
+          "nist_standard": "FIPS 203",
+          "priority": "HIGH",
+          "hybrid_option": "X25519+ML-KEM-768",
+          "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+        },
+        {
+          "component": "TLS Protocol",
+          "current": "TLS 1.2",
+          "recommended": "TLS 1.3",
+          "priority": "HIGH",
+          "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+        }
+      ],
+      "tls_version": "TLSv1.2",
+      "cipher_suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "pqcClassification": {
+        "status": "MIGRATION_NEEDED",
+        "label": "🟠 Migration Needed",
+        "color": "warning",
+        "description": "Post-quantum migration required"
+      },
+      "riskScore": 73.8,
+      "riskLevel": {
+        "level": "HIGH",
+        "color": "warning",
+        "icon": "🟠"
+      },
+      "formattedCert": {
+        "subject": "ibanking.pnb.bank.in",
+        "issuer": "DigiCert Inc",
+        "validFrom": "Aug 21 00:00:00 2025 GMT",
+        "validUntil": "Aug 20 23:59:59 2026 GMT",
+        "daysUntilExpiry": 158,
+        "isExpired": false,
+        "sans": [
+          {
+            "type": "DNS",
+            "value": "ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.ibanking.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "iretail.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "icorp.pnb.bank.in"
+          },
+          {
+            "type": "DNS",
+            "value": "pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "www.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "www.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.netpnb.com"
+          },
+          {
+            "type": "DNS",
+            "value": "netbanking.pnbibanking.in"
+          },
+          {
+            "type": "DNS",
+            "value": "internetbanking.pnbibanking.in"
+          }
+        ],
+        "sha256": "adcccd62f7597f2ba7564c407875f6a12f3b778cbc7747f7154f1eab4b9f19bb"
+      },
+      "threatTimeline": "2030-2035",
+      "migrationDeadline": "2027",
+      "urgency": "NEAR-TERM"
+    }
+  ],
+  "risk_matrix": [
+    {
+      "host": "ibanking.pnb.bank.in",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "netpnb.com",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "internetbanking.netpnb.com",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "icorp.pnb.bank.in",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "www.netpnb.com",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "www.pnbibanking.in",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "pnbibanking.in",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "internetbanking.pnbibanking.in",
+      "port": 443,
+      "risk_score": 73.8,
+      "risk_level": "HIGH",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 8,
+      "weak_ciphers": [],
+      "migration_deadline": "2027",
+      "urgency": "NEAR-TERM"
+    },
+    {
+      "host": "netbanking.netpnb.com",
+      "port": 443,
+      "risk_score": 30.8,
+      "risk_level": "LOW",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 14,
+      "weak_ciphers": [],
+      "migration_deadline": "2030",
+      "urgency": "MONITOR"
+    },
+    {
+      "host": "iretail.pnb.bank.in",
+      "port": 443,
+      "risk_score": 30.8,
+      "risk_level": "LOW",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 14,
+      "weak_ciphers": [],
+      "migration_deadline": "2030",
+      "urgency": "MONITOR"
+    },
+    {
+      "host": "netbanking.pnbibanking.in",
+      "port": 443,
+      "risk_score": 30.8,
+      "risk_level": "LOW",
+      "pqc_status": "MIGRATION_NEEDED",
+      "cipher_diversity": 14,
+      "weak_ciphers": [],
+      "migration_deadline": "2030",
+      "urgency": "MONITOR"
+    }
+  ],
+  "pqc_migration_plan": {
+    "immediate_actions": [],
+    "short_term_actions": [
+      {
+        "host": "ibanking.pnb.bank.in",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "ibanking.pnb.bank.in",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "netpnb.com",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "netpnb.com",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "internetbanking.netpnb.com",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "internetbanking.netpnb.com",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "icorp.pnb.bank.in",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "icorp.pnb.bank.in",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "www.netpnb.com",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "www.netpnb.com",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "www.pnbibanking.in",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "www.pnbibanking.in",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "pnbibanking.in",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "pnbibanking.in",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      },
+      {
+        "host": "internetbanking.pnbibanking.in",
+        "port": 443,
+        "component": "Authentication",
+        "current": "RSA",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "HIGH",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "RSA is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "internetbanking.pnbibanking.in",
+        "port": 443,
+        "component": "TLS Protocol",
+        "current": "TLS 1.2",
+        "recommended": "TLS 1.3",
+        "priority": "HIGH",
+        "rationale": "TLS 1.3 provides improved cryptographic agility and PQC readiness."
+      }
+    ],
+    "planned_actions": [
+      {
+        "host": "ibanking.pnb.bank.in",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "netpnb.com",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "internetbanking.netpnb.com",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "icorp.pnb.bank.in",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "www.netpnb.com",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "www.pnbibanking.in",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "pnbibanking.in",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      },
+      {
+        "host": "internetbanking.pnbibanking.in",
+        "port": 443,
+        "component": "Key Exchange",
+        "current": "ECDHE",
+        "recommended": "ML-KEM-768 (Kyber)",
+        "nist_standard": "FIPS 203",
+        "priority": "MEDIUM",
+        "hybrid_option": "X25519+ML-KEM-768",
+        "rationale": "ECDHE is vulnerable to Shor's algorithm. Migrate to ML-KEM-768 (Kyber) (FIPS 203)."
+      }
+    ],
+    "total_recommendations": 24
+  },
+  "stats": {
+    "totalAssets": 11,
+    "criticalCount": 0,
+    "pqcReadyCount": 0,
+    "mitigationNeeded": 11
+  }
+}
