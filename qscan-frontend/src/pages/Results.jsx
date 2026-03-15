@@ -2,7 +2,6 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useScanResults } from "../hooks/useScan";
 import { motion } from "framer-motion";
-
 import {
   SkeletonCard,
   EmptyState,
@@ -17,6 +16,8 @@ import "./pages.css";
 
 function Results() {
   const { scanId } = useParams();
+
+  /* ML branch added scanResults */
   const { cbom, scanResults, loading, error } = useScanResults(scanId);
 
   if (loading) {
@@ -74,7 +75,6 @@ function Results() {
             </p>
           </div>
 
-          {/* QUANTUM READINESS */}
           <div
             className="card"
             style={{
@@ -145,7 +145,9 @@ function Results() {
                   <th>TLS</th>
                   <th>Cipher</th>
                   <th>PQC Status</th>
-                  <th>Rule Risk</th>
+                  <th>Risk</th>
+
+                  {/* ML columns added */}
                   <th>AI Risk</th>
                   <th>Anomaly</th>
                 </tr>
@@ -154,6 +156,7 @@ function Results() {
               <tbody>
                 {cbom.crypto_assets?.map((asset, idx) => {
 
+                  /* ML results lookup */
                   const mlScore = scanResults?.[idx]?.ml_risk_score;
                   const anomaly = scanResults?.[idx]?.anomaly_detection;
 
@@ -168,7 +171,9 @@ function Results() {
 
                       <td>
                         <TLSVersionBadge
-                          version={asset.tls_configuration?.protocol_version}
+                          version={
+                            asset.tls_configuration?.protocol_version || "UNKNOWN"
+                          }
                         />
                       </td>
 
@@ -190,43 +195,40 @@ function Results() {
                         />
                       </td>
 
-                      {/* ML RISK SCORE */}
+                      {/* ML risk score */}
                       <td>
-                        {mlScore !== undefined
-                          ? mlScore.toFixed(1)
-                          : "-"}
+                        {mlScore !== undefined ? mlScore.toFixed(1) : "-"}
                       </td>
 
-                      {/* ANOMALY */}
-                     <td>
-  {scanResults?.[idx]?.anomaly_detection ? (
-    <div style={{ fontSize: "0.85rem" }}>
-      <div>
-        {scanResults[idx].anomaly_detection.is_anomaly
-          ? "⚠️ Anomaly"
-          : "Normal"}
-      </div>
+                      {/* anomaly detection */}
+                      <td>
+                        {anomaly ? (
+                          <div style={{ fontSize: "0.85rem" }}>
 
-      <div style={{ color: "var(--text-muted)" }}>
-        Score:{" "}
-        {scanResults[idx].anomaly_detection.anomaly_score?.toFixed(2) ?? "-"}
-      </div>
+                            <div>
+                              {anomaly.is_anomaly ? "⚠️ Anomaly" : "Normal"}
+                            </div>
 
-      <div style={{ color: "var(--text-muted)" }}>
-        Confidence:{" "}
-        {scanResults[idx].anomaly_detection.confidence ?? "-"}
-      </div>
+                            <div style={{ color: "var(--text-muted)" }}>
+                              Score:{" "}
+                              {anomaly.anomaly_score?.toFixed(2) ?? "-"}
+                            </div>
 
-      {scanResults[idx].anomaly_detection.reasons?.length > 0 && (
-        <div style={{ color: "orange" }}>
-          {scanResults[idx].anomaly_detection.reasons.join(", ")}
-        </div>
-      )}
-    </div>
-  ) : (
-    "-"
-  )}
-</td>
+                            <div style={{ color: "var(--text-muted)" }}>
+                              Confidence: {anomaly.confidence ?? "-"}
+                            </div>
+
+                            {anomaly.reasons?.length > 0 && (
+                              <div style={{ color: "orange" }}>
+                                {anomaly.reasons.join(", ")}
+                              </div>
+                            )}
+
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
 
                     </tr>
                   );
@@ -234,10 +236,6 @@ function Results() {
               </tbody>
             </table>
           </div>
-
-          {/* -------------------------
-              RISK MATRIX
-          -------------------------- */}
 
           {cbom.risk_matrix && cbom.risk_matrix.length > 0 && (
             <div className="card" style={{ marginTop: "2rem" }}>
@@ -370,13 +368,14 @@ function Results() {
                   {a.host}:{a.port} → {a.component}
                 </p>
               ))}
-
             </div>
           )}
 
           <details style={{ marginTop: "2rem" }}>
             <summary>Raw CBOM Data</summary>
-            <pre>{JSON.stringify(cbom, null, 2)}</pre>
+            <pre>
+              {JSON.stringify(cbom, null, 2)}
+            </pre>
           </details>
 
         </motion.div>
