@@ -2,6 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useScanResults } from "../hooks/useScan";
 import { motion } from "framer-motion";
+
 import {
   SkeletonCard,
   EmptyState,
@@ -16,7 +17,7 @@ import "./pages.css";
 
 function Results() {
   const { scanId } = useParams();
-  const { cbom, loading, error } = useScanResults(scanId);
+  const { cbom, scanResults, loading, error } = useScanResults(scanId);
 
   if (loading) {
     return (
@@ -51,15 +52,15 @@ function Results() {
     readinessScore >= 80
       ? "Quantum Ready"
       : readinessScore >= 50
-        ? "Partial PQC"
-        : "Not Ready";
+      ? "Partial PQC"
+      : "Not Ready";
 
   const readinessColor =
     readinessScore >= 80
       ? "var(--accent-safe)"
       : readinessScore >= 50
-        ? "orange"
-        : "red";
+      ? "orange"
+      : "red";
 
   return (
     <div style={{ minHeight: "100vh" }}>
@@ -73,6 +74,7 @@ function Results() {
             </p>
           </div>
 
+          {/* QUANTUM READINESS */}
           <div
             className="card"
             style={{
@@ -143,46 +145,92 @@ function Results() {
                   <th>TLS</th>
                   <th>Cipher</th>
                   <th>PQC Status</th>
-                  <th>Risk</th>
+                  <th>Rule Risk</th>
+                  <th>AI Risk</th>
+                  <th>Anomaly</th>
                 </tr>
               </thead>
 
               <tbody>
-                {cbom.crypto_assets?.map((asset, idx) => (
-                  <tr key={idx}>
+                {cbom.crypto_assets?.map((asset, idx) => {
 
-                    <td>
-                      <code>
-                        {asset.host}:{asset.port}
-                      </code>
-                    </td>
+                  const mlScore = scanResults?.[idx]?.ml_risk_score;
+                  const anomaly = scanResults?.[idx]?.anomaly_detection;
 
-                    <td>
-                      <TLSVersionBadge
-                        version={asset.tls_configuration?.protocol_version || "UNKNOWN"}
-                      />
-                    </td>
+                  return (
+                    <tr key={idx}>
 
-                    <td>
-                      <code>
-                        {asset.tls_configuration?.negotiated_cipher || "Unknown"}
-                      </code>
-                    </td>
+                      <td>
+                        <code>
+                          {asset.host}:{asset.port}
+                        </code>
+                      </td>
 
-                    <td>
-                      <PQCStatusPill
-                        status={asset.quantum_assessment?.pqc_status}
-                      />
-                    </td>
+                      <td>
+                        <TLSVersionBadge
+                          version={asset.tls_configuration?.protocol_version}
+                        />
+                      </td>
 
-                    <td>
-                      <RiskBadge
-                        score={asset.quantum_assessment?.risk_score}
-                      />
-                    </td>
+                      <td>
+                        <code>
+                          {asset.tls_configuration?.negotiated_cipher || "Unknown"}
+                        </code>
+                      </td>
 
-                  </tr>
-                ))}
+                      <td>
+                        <PQCStatusPill
+                          status={asset.quantum_assessment?.pqc_status}
+                        />
+                      </td>
+
+                      <td>
+                        <RiskBadge
+                          score={asset.quantum_assessment?.risk_score}
+                        />
+                      </td>
+
+                      {/* ML RISK SCORE */}
+                      <td>
+                        {mlScore !== undefined
+                          ? mlScore.toFixed(1)
+                          : "-"}
+                      </td>
+
+                      {/* ANOMALY */}
+                     <td>
+  {scanResults?.[idx]?.anomaly_detection ? (
+    <div style={{ fontSize: "0.85rem" }}>
+      <div>
+        {scanResults[idx].anomaly_detection.is_anomaly
+          ? "⚠️ Anomaly"
+          : "Normal"}
+      </div>
+
+      <div style={{ color: "var(--text-muted)" }}>
+        Score:{" "}
+        {scanResults[idx].anomaly_detection.anomaly_score?.toFixed(2) ?? "-"}
+      </div>
+
+      <div style={{ color: "var(--text-muted)" }}>
+        Confidence:{" "}
+        {scanResults[idx].anomaly_detection.confidence ?? "-"}
+      </div>
+
+      {scanResults[idx].anomaly_detection.reasons?.length > 0 && (
+        <div style={{ color: "orange" }}>
+          {scanResults[idx].anomaly_detection.reasons.join(", ")}
+        </div>
+      )}
+    </div>
+  ) : (
+    "-"
+  )}
+</td>
+
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -328,9 +376,7 @@ function Results() {
 
           <details style={{ marginTop: "2rem" }}>
             <summary>Raw CBOM Data</summary>
-            <pre>
-              {JSON.stringify(cbom, null, 2)}
-            </pre>
+            <pre>{JSON.stringify(cbom, null, 2)}</pre>
           </details>
 
         </motion.div>

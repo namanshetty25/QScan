@@ -99,12 +99,13 @@ export const useScanResults = (scanId) => {
   }, [fetchResults]);
 
   return {
-    results,
-    cbom,
-    loading,
-    error,
-    refetch: fetchResults,
-  };
+  results,
+  cbom,
+  scanResults: results?.scan_results || [],
+  loading,
+  error,
+  refetch: fetchResults,
+};
 };
 
 
