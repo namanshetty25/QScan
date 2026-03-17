@@ -454,5 +454,5 @@ This project is developed for the **PNB Cybersecurity Hackathon 2026**.
 
 <p align="center">
   <b>⚛️ Built for a quantum-safe future</b><br/>
-  <sub>PNB Cybersecurity Hackathon 2025 — Team QShield</sub>
+  <sub>PNB Cybersecurity Hackathon 2026 — Team CacheMe</sub>
 </p>
