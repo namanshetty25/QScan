@@ -581,23 +581,6 @@ async def get_history():
             detail=f"Failed to retrieve scan history: {str(e)}",
         )
 
-
-@app.get("/api/v1/scan/{scan_id}/nist-compliance", response_model=NISTComplianceResponse)
-async def get_nist_compliance(scan_id: str):
-    """
-    Get NIST compliance check results for a completed scan.
-    Returns detected guideline changes and similarity scores.
-    """
-    record = await _aget_record(scan_id)
-
-    if record["status"] != ScanStatus.COMPLETED:
-        raise HTTPException(
-            status_code=409,
-            detail="Scan not completed yet",
-        )
-
-    nist = record.get("nist_compliance")
-
     
 
 @app.delete("/api/v1/scan/{scan_id}")
