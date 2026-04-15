@@ -531,8 +531,8 @@ Quanta responds with structured, step-by-step guidance including specific FIPS s
 | **Cache/Store** | Redis (async via redis-py) |
 | **Frontend** | React 19, React Router, Recharts, Framer Motion, Axios |
 | **UI** | Lucide React icons, interactive designs |
-| **PDF Export** | ReportLab / WeasyPrint |
-| **AI Chatbot** | Claude API (Quanta assistant) |
+| **PDF Export** | jsPDF |
+| **AI Chatbot** | Groq API (Quanta assistant) |
 
 ---
 
