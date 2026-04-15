@@ -16,6 +16,8 @@ import traceback
 
 # ── Backend-local config (must import before adding parent to sys.path) ──
 from config import settings
+print("🔥 GROQ KEY:", settings.GROQ_API_KEY)
+print("🔥 CWD:", os.getcwd())
 
 # ── Fix import path so ai_ml, crypto, utils are visible from backend ──
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -87,7 +89,6 @@ def _deserialize(raw: str | bytes) -> dict:
 
 
 async def _aget_record(scan_id: str) -> dict:
-
     raw = await _async_redis.get(_scan_key(scan_id))
 
     if raw is None:
@@ -100,7 +101,6 @@ async def _aget_record(scan_id: str) -> dict:
 
 
 def _sync_redis():
-
     return redis.Redis(
         host=settings.REDIS_HOST,
         port=settings.REDIS_PORT,
@@ -111,7 +111,6 @@ def _sync_redis():
 
 
 def _redis_save(r, record: dict):
-
     r.set(_scan_key(record["scan_id"]), _serialize(record))
 
 
@@ -121,7 +120,6 @@ def _redis_save(r, record: dict):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
     global _async_redis
 
     _async_redis = aioredis.Redis(
@@ -206,7 +204,6 @@ class CbomResponse(BaseModel):
     pqc_migration_plan: Optional[dict]
 
 
-
 class HealthResponse(BaseModel):
     status: str
 
@@ -215,6 +212,7 @@ class ComputeHNDLRequest(BaseModel):
     scan_id: str
     migration_years: int = 3
     data_life_years: int = 7
+
 
 class ChatMessage(BaseModel):
     role: str
@@ -236,14 +234,12 @@ class ComputeHNDLResponse(BaseModel):
 # -----------------------------------------------------------
 
 def _append_log(record: dict, line: str):
-
     record["logs"].append(
         f"[{datetime.now(timezone.utc).isoformat()}] {line}"
     )
 
 
 def _read_json(path: str) -> Any:
-
     if not os.path.exists(path):
         return None
 
@@ -256,7 +252,6 @@ def _read_json(path: str) -> Any:
 # -----------------------------------------------------------
 
 def _run_qscan(scan_id: str, target: str, discover: bool, output_dir: str, ports: list[int] | None):
-
     r = _sync_redis()
 
     record = {
@@ -291,7 +286,6 @@ def _run_qscan(scan_id: str, target: str, discover: bool, output_dir: str, ports
     _redis_save(r, record)
 
     try:
-
         proc = subprocess.run(
             cmd,
             capture_output=True,
@@ -323,62 +317,48 @@ def _run_qscan(scan_id: str, target: str, discover: bool, output_dir: str, ports
         record["assets_data"] = assets
 
         if record["scan_results"]:
-
             first_result = record["scan_results"][0]
 
             record["risk_score"] = first_result.get("quantum_risk_score")
 
-            # ML risk scoring
             try:
-
                 ml_score = risk_model.predict(first_result)
-
                 if isinstance(ml_score, list):
                     ml_score = ml_score[0]
-
                 record["ML_risk_score"] = ml_score
-
             except Exception as e:
                 _append_log(record, f"ML scoring error: {e}")
 
-            # anomaly detection
             try:
-
                 anomaly = anomaly_detector.detect(first_result)
                 record["anomaly_detection"] = anomaly
-
             except Exception as e:
                 _append_log(record, f"Anomaly detection error: {e}")
 
         if cbom:
-
             record["assets_found"] = cbom.get(
                 "metadata", {}
             ).get("total_assets_scanned", 0)
+
         record["progress"] = 100
         record["status"] = ScanStatus.COMPLETED
-
         _append_log(record, "Scan completed successfully.")
 
     except subprocess.TimeoutExpired:
-
         record["status"] = ScanStatus.FAILED
         record["error"] = f"qscan timed out after {settings.QSCAN_TIMEOUT}"
 
     except Exception as exc:
-
         record["status"] = ScanStatus.FAILED
         record["error"] = str(exc)
 
     finally:
-
         shutil.rmtree(output_dir, ignore_errors=True)
         _redis_save(r, record)
         r.close()
 
 
 async def _run_qscan_async(scan_id: str, target: str, discover: bool, output_dir: str, ports):
-
     await asyncio.to_thread(_run_qscan, scan_id, target, discover, output_dir, ports)
 
 
@@ -388,14 +368,12 @@ async def _run_qscan_async(scan_id: str, target: str, discover: bool, output_dir
 
 @app.get("/api/v1/health", response_model=HealthResponse)
 async def health():
-
     await _async_redis.ping()
     return {"status": "ok"}
 
 
 @app.post("/api/v1/scan", response_model=StartScanResponse, status_code=202)
 async def start_scan(body: StartScanRequest, background_tasks: BackgroundTasks):
-
     scan_id = str(uuid.uuid4())
     output_dir = tempfile.mkdtemp(prefix=f"qscan_{scan_id}_")
 
@@ -436,7 +414,6 @@ async def start_scan(body: StartScanRequest, background_tasks: BackgroundTasks):
 
 @app.get("/api/v1/scan/{scan_id}", response_model=ScanStatusResponse)
 async def get_scan_status(scan_id: str):
-
     record = await _aget_record(scan_id)
 
     return {
@@ -450,7 +427,6 @@ async def get_scan_status(scan_id: str):
 
 @app.get("/api/v1/scan/{scan_id}/results", response_model=ScanResultsResponse)
 async def get_scan_results(scan_id: str):
-
     record = await _aget_record(scan_id)
 
     if record["status"] != ScanStatus.COMPLETED:
@@ -471,7 +447,6 @@ async def get_scan_results(scan_id: str):
 
 @app.get("/api/v1/scan/{scan_id}/cbom", response_model=CbomResponse)
 async def get_cbom(scan_id: str):
-
     record = await _aget_record(scan_id)
 
     if record["status"] != ScanStatus.COMPLETED:
@@ -521,7 +496,6 @@ async def compute_hndl(body: ComputeHNDLRequest):
             detail="No scan results found — cannot compute HNDL risk",
         )
 
-    # Use the first scan result (most critical asset)
     first_result = scan_results[0]
 
     try:
@@ -551,7 +525,6 @@ async def get_history():
     try:
         r = _sync_redis()
 
-        # Get all scan keys
         scan_keys = r.keys("scan:*")
 
         history = []
@@ -574,7 +547,6 @@ async def get_history():
 
         r.close()
 
-        # Sort by timestamp descending (newest first)
         history.sort(key=lambda x: x["timestamp"], reverse=True)
 
         return history
@@ -585,7 +557,6 @@ async def get_history():
             detail=f"Failed to retrieve scan history: {str(e)}",
         )
 
-    
 
 @app.delete("/api/v1/scan/{scan_id}")
 async def delete_scan(scan_id: str):
@@ -607,11 +578,11 @@ async def delete_scan(scan_id: str):
 
 
 # -----------------------------------------------------------
-<<<<<<< HEAD
 # PQC Certificate System
 # -----------------------------------------------------------
 
 _CERT_SECRET = os.environ.get("QSCAN_CERT_SECRET", "qscan-pnb-hackathon-2026-secret-key")
+
 
 def _compute_cert_status(cbom):
     """
@@ -627,7 +598,6 @@ def _compute_cert_status(cbom):
     hybrid = pqc_dist.get("HYBRID_PQC", 0)
     critical_count = summary.get("risk_distribution", {}).get("CRITICAL", 0)
 
-    # Collect detected PQC algorithms
     pqc_algos = set()
     for asset in assets:
         kex = asset.get("cipher_analysis", {}).get("key_exchange") or {}
@@ -637,7 +607,6 @@ def _compute_cert_status(cbom):
         if auth.get("quantum_safe"):
             pqc_algos.add(auth.get("algorithm", "Unknown"))
 
-    # Determine status
     if critical_count > 0 or avg_risk >= 80:
         status = "CRITICAL"
     elif total > 0 and pqc_ready == total:
@@ -652,9 +621,10 @@ def _compute_cert_status(cbom):
 
 def _sign_certificate(cert_data):
     """Generate HMAC-SHA256 signature for certificate integrity."""
-    payload = json.dumps({
-        k: v for k, v in cert_data.items() if k != "signature"
-    }, sort_keys=True)
+    payload = json.dumps(
+        {k: v for k, v in cert_data.items() if k != "signature"},
+        sort_keys=True
+    )
     return hmac.new(
         _CERT_SECRET.encode(),
         payload.encode(),
@@ -685,17 +655,10 @@ async def issue_certificate(scan_id: str):
     status, pqc_algos, avg_risk = _compute_cert_status(cbom_data)
     cert_id = f"PQC-{uuid.uuid4().hex[:12].upper()}"
     issued_at = datetime.now(timezone.utc).isoformat()
-    valid_until = datetime(
-        datetime.now(timezone.utc).year,
-        datetime.now(timezone.utc).month,
-        datetime.now(timezone.utc).day,
-        tzinfo=timezone.utc,
-    )
-    # 90-day validity
+
     from datetime import timedelta
     valid_until = (datetime.now(timezone.utc) + timedelta(days=90)).isoformat()
 
-    # CBOM hash for tamper evidence
     cbom_hash = hashlib.sha256(
         json.dumps(cbom_data, sort_keys=True).encode()
     ).hexdigest()
@@ -717,13 +680,12 @@ async def issue_certificate(scan_id: str):
 
     cert["signature"] = _sign_certificate(cert)
 
-    # Store in Redis
     try:
         r = _sync_redis()
-        r.set(f"cert:{cert_id}", json.dumps(cert), ex=90 * 86400)  # 90 days TTL
+        r.set(f"cert:{cert_id}", json.dumps(cert), ex=90 * 86400)
         r.close()
     except Exception:
-        pass  # Certificate is still valid even if Redis storage fails
+        pass
 
     return cert
 
@@ -746,12 +708,10 @@ async def verify_certificate(cert_id: str):
 
     cert = json.loads(raw)
 
-    # Verify HMAC signature
     stored_sig = cert.get("signature")
     expected_sig = _sign_certificate(cert)
     sig_valid = hmac.compare_digest(stored_sig or "", expected_sig)
 
-    # Check expiry
     valid_until = datetime.fromisoformat(cert["valid_until"])
     is_expired = datetime.now(timezone.utc) > valid_until
 
@@ -763,7 +723,9 @@ async def verify_certificate(cert_id: str):
             "verified_at": datetime.now(timezone.utc).isoformat(),
         }
     }
-=======
+
+
+# -----------------------------------------------------------
 # Quanta AI Chatbot (Groq-powered)
 # -----------------------------------------------------------
 
@@ -797,7 +759,6 @@ def _build_system_prompt(scan_context: dict | None) -> str:
         base += "\n--- SCAN REPORT CONTEXT ---\n"
         base += "The user has just completed a scan. Here are the results:\n\n"
 
-        # CBOM summary
         cbom = scan_context.get("cbom")
         if cbom:
             meta = cbom.get("metadata", {})
@@ -823,9 +784,8 @@ def _build_system_prompt(scan_context: dict | None) -> str:
 
             base += f"Forward Secrecy: {summary.get('forward_secrecy_adoption', 'N/A')}\n\n"
 
-            # Crypto assets details
             assets = cbom.get("crypto_assets", [])
-            for i, asset in enumerate(assets[:5]):  # Limit to first 5
+            for i, asset in enumerate(assets[:5]):
                 base += f"Asset {i+1}: {asset.get('host', '?')}:{asset.get('port', '?')}\n"
                 tls = asset.get("tls_configuration", {})
                 base += f"  TLS: {tls.get('protocol_version', '?')}\n"
@@ -847,7 +807,6 @@ def _build_system_prompt(scan_context: dict | None) -> str:
                         base += f"    - {rec.get('component', '?')}: {rec.get('current', '?')} → {rec.get('recommended', '?')} ({rec.get('nist_standard', '')})\n"
                 base += "\n"
 
-            # Migration plan
             migration = cbom.get("pqc_migration_plan", {})
             if migration:
                 imm = migration.get("immediate_actions", [])
@@ -856,7 +815,6 @@ def _build_system_prompt(scan_context: dict | None) -> str:
                     for a in imm[:3]:
                         base += f"  - {a.get('host', '?')}:{a.get('port', '?')} — {a.get('component', '?')}: migrate to {a.get('recommended', '?')}\n"
 
-        # Scan results (ML scores)
         results = scan_context.get("scan_results", [])
         if results:
             base += "\nML Risk Scores:\n"
@@ -891,7 +849,6 @@ def _stream_groq_response(messages: list[dict]):
         for chunk in completion:
             content = chunk.choices[0].delta.content
             if content:
-                # SSE format
                 yield f"data: {json.dumps({'content': content})}\n\n"
 
         yield "data: [DONE]\n\n"
@@ -913,7 +870,6 @@ async def chat_stream(body: ChatRequest):
             detail="Groq client not configured. Set the GROQ_API_KEY environment variable.",
         )
 
-    # Build messages with system prompt
     system_prompt = _build_system_prompt(body.scan_context)
     messages = [{"role": "system", "content": system_prompt}]
 
@@ -929,4 +885,3 @@ async def chat_stream(body: ChatRequest):
             "X-Accel-Buffering": "no",
         },
     )
->>>>>>> origin/main
