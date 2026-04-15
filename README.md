@@ -12,7 +12,7 @@
   <b>🛡️ QScan Automated PQC Scanner for Banking Infrastructure</b>
 </p>
 
-> Evaluate the cryptographic security of banking systems and assess readiness for Post-Quantum Cryptography (PQC) — powered by AI/ML risk scoring, anomaly detection, and NIST-standardized migration advisories.
+> Evaluate the cryptographic security of banking systems and assess readiness for Post-Quantum Cryptography (PQC) — powered by AI/ML risk scoring, anomaly detection, NIST-standardized migration advisories, regulatory compliance mapping, and an AI assistant chatbot.
 
 ---
 
@@ -21,17 +21,32 @@
 ### Quantum Readiness Dashboard
 | Readiness Score | Risk Matrix |
 |:---:|:---:|
-| ![Quantum Readiness Score](Run%20Snapshots/IMG-20260315-WA0040.jpg) | ![Risk Matrix](Run%20Snapshots/IMG-20260315-WA0041.jpg) |
+| ![Quantum Readiness Score](Run%20Snapshots/dashboard.jpeg) | ![Risk Matrix](Run%20Snapshots/matrix.jpeg) |
 
 ### Detailed Scan Results & Threat Assessment
 | Asset Scan Results (TLS, Cipher, Anomaly Detection) | Quantum Threat Assessment & PQC Migration Recommendations |
 |:---:|:---:|
-| ![Scan Results](Run%20Snapshots/IMG-20260315-WA0044.jpg) | ![Threat Assessment](Run%20Snapshots/IMG-20260315-WA0043.jpg) |
+| ![Scan Results](Run%20Snapshots/table.jpeg) | ![Threat Assessment](Run%20Snapshots/stats.jpeg) |
 
 ### PQC Migration Plan & CBOM Output
-| PQC Migration Plan | CBOM JSON Output |
+| PQC Migration Plan | Engineer's Remediation Playbook & CBOM |
 |:---:|:---:|
-| ![PQC Migration Plan](Run%20Snapshots/IMG-20260315-WA0042.jpg) | ![CBOM Output](Run%20Snapshots/IMG-20260315-WA0039.jpg) |
+| ![PQC Migration Plan](Run%20Snapshots/plan.jpeg) | ![Remediation Playbook](Run%20Snapshots/remediation.jpeg) |
+
+### Advanced Analytics & Compliance
+| Cryptographic Analytics | Regulatory Compliance Assessment |
+|:---:|:---:|
+| ![Cryptographic Analytics](Run%20Snapshots/analytics.jpeg) | ![Regulatory Compliance](Run%20Snapshots/compliance.jpeg) |
+
+### Mosca Inequality & AI Assistant
+| Mosca Inequality Breach Window | Quanta AI Chatbot Assistant |
+|:---:|:---:|
+| ![Mosca Inequality](Run%20Snapshots/mosca.jpeg) | ![Quanta AI Assistant](Run%20Snapshots/Quanta.jpeg) |
+
+### Asset Discovery & PQC Certificate
+| Asset Discovery Results | PQC Certificate Details |
+|:---:|:---:|
+| ![Asset Discovery](Run%20Snapshots/assets.jpeg) | — |
 
 ---
 
@@ -44,6 +59,11 @@
 - 📦 **Generate** a structured Cryptographic Bill of Materials (CBOM) in JSON format
 - 🤖 **Score** quantum vulnerability using both rule-based and AI/ML-driven risk analysis (XGBoost + Isolation Forest anomaly detection)
 - 📋 **Recommend** NIST-standardized PQC migration paths with urgency timelines
+- 🛡️ **Issue** PQC Readiness Certificates to verified quantum-safe assets
+- 📜 **Map** scan findings to RBI, CERT-In, NIST, and PCI DSS regulatory requirements
+- 🩺 **Generate** Engineer's Remediation Playbooks with copy-paste config templates
+- 📄 **Export** PDF reports with full scan results and compliance summaries
+- 🤖 **Chat** with **Quanta**, the embedded AI assistant for scan-aware quantum security guidance
 - 📊 **Visualize** all results through an interactive, real-time Quantum Readiness Dashboard
 
 ---
@@ -88,9 +108,17 @@
               │  │  └──────────┘ └───────────────┘  │   │
               │  └──────────────┬───────────────────┘   │
               │                 ▼                       │
-              │         ┌────────────────┐              │
-              │         │ CBOM Generator │              │
-              │         └────────────────┘              │
+              │  ┌──────────────────────────────────┐   │
+              │  │   Post-Processing & Reporting    │   │
+              │  │  ┌──────────┐ ┌───────────────┐  │   │
+              │  │  │  CBOM    │ │  Compliance   │  │   │
+              │  │  │Generator │ │  Mapper       │  │   │
+              │  │  └──────────┘ └───────────────┘  │   │
+              │  │  ┌──────────┐ ┌───────────────┐  │   │
+              │  │  │   PDF    │ │  PQC Cert     │  │   │
+              │  │  │ Exporter │ │  Issuer       │  │   │
+              │  │  └──────────┘ └───────────────┘  │   │
+              │  └──────────────────────────────────┘   │
               └─────────────────────────────────────────┘
 ```
 
@@ -126,6 +154,12 @@ QScan/
 ├── cbom/
 │   └── cbom_generator.py            # CBOM JSON generation
 │
+├── compliance/
+│   └── compliance_mapper.py         # RBI, CERT-In, NIST, PCI DSS mapping
+│
+├── reporting/
+│   └── pdf_exporter.py              # PDF report generation
+│
 ├── utils/
 │   └── logger.py                    # Centralized logging
 │
@@ -141,8 +175,12 @@ QScan/
 │   │   │   ├── NewScan.jsx          # Start new scan form
 │   │   │   ├── Results.jsx          # Full scan results dashboard
 │   │   │   ├── History.jsx          # Scan history list
-│   │   │   └── Certificate.jsx      # Certificate detail view
-│   │   ├── components/              # Reusable UI components
+│   │   │   └── Certificate.jsx      # PQC Certificate detail view
+│   │   ├── components/
+│   │   │   ├── Quanta.jsx           # AI Chatbot assistant widget
+│   │   │   ├── CompliancePanel.jsx  # Regulatory compliance display
+│   │   │   ├── RemediationPlaybook.jsx # Engineer remediation templates
+│   │   │   └── AnalyticsCharts.jsx  # CRQC timeline & vulnerability charts
 │   │   ├── api/                     # Axios API client
 │   │   ├── hooks/                   # Custom React hooks
 │   │   ├── styles/                  # CSS stylesheets
@@ -303,7 +341,9 @@ python main.py --domain example.com --discover --cbom --ports 443,8443,993 --ver
 3. Start the frontend: `npm start` (from `qscan-frontend/`)
 4. Navigate to http://localhost:3000
 5. Enter a target domain in **New Scan** and monitor progress in real-time
-6. View results, risk matrix, CBOM, and PQC migration recommendations
+6. View results, risk matrix, CBOM, compliance report, remediation playbook, and PQC migration recommendations
+7. Chat with **Quanta** for AI-powered scan insights and migration guidance
+8. Download the **PDF Report** or **CBOM JSON** directly from the results page
 
 ---
 
@@ -329,15 +369,27 @@ python main.py --domain example.com --discover --cbom --ports 443,8443,993 --ver
 | **Anomaly Detection** | Isolation Forest model that flags unusual or suspicious cryptographic configurations |
 | **Training Data Generator** | Generates labeled datasets from real scans and synthetic crypto configs for model training |
 
+### 🆕 New Features
+
+| Feature | Description |
+|---|---|
+| **Quanta AI Chatbot** | Embedded AI assistant (`Quanta`) that answers questions about scan results, migration strategies, PQC algorithms, and step-by-step remediation guidance in real time |
+| **PQC Certificate Issuer** | Issues a verifiable **PQC Readiness Certificate** for assets that meet quantum-safe standards; viewable from the Certificate page |
+| **Regulatory Compliance Assessment** | Automatically maps scan findings to **RBI**, **CERT-In**, **NIST**, and **PCI DSS** requirements with per-control pass/fail status and an overall compliance score |
+| **Engineer's Remediation Playbook** | Generates copy-paste server configuration templates (Nginx, Apache, AWS ALB) to instantly enable ML-KEM-768 Hybrid PQC on infrastructure |
+| **PDF Report Export** | One-click export of the full scan results, compliance summary, and CBOM metadata as a downloadable PDF |
+| **Advanced Analytics Charts** | CRQC Algorithm Vulnerability Timeline, Mosca Inequality Breach Window visualization, Cryptographic Posture radar chart, and Quantum Vulnerability Breakdown donut chart |
+| **Mosca Inequality Calculator** | Interactive sliders to adjust Migration Lead-Time (X) and Data Shelf-Life (Y) parameters; computes breach window against CRQC arrival (Z) with real-time recommendations |
+
 ### Web Dashboard (React)
 
 | Page | Description |
 |---|---|
 | **Landing** | Home page with platform overview and API connection status |
 | **New Scan** | Form to initiate scans with domain input, discovery toggle, and port selection |
-| **Results** | Full scan results — Quantum Readiness Score, Risk Matrix, Asset details, Cipher suites, Anomaly flags, PQC Migration Plan, Certificate info, and Threat Assessment |
+| **Results** | Full scan results — Quantum Readiness Score, HNDL Mosca Inequality Risk, Risk Matrix, Asset details, Cipher suites, Anomaly flags, PQC Migration Plan, Remediation Playbook, Compliance Assessment, Analytics Charts, Certificate info, and Threat Assessment |
 | **History** | Browse and manage past scan records |
-| **Certificate** | Detailed certificate information view |
+| **Certificate** | Detailed PQC Certificate view with Post-Quantum Migration Recommendations per cryptographic layer |
 
 ### REST API (FastAPI + Redis)
 
@@ -347,6 +399,9 @@ python main.py --domain example.com --discover --cbom --ports 443,8443,993 --ver
 | `/api/v1/scan/{id}` | `GET` | Poll scan status and progress |
 | `/api/v1/scan/{id}/results` | `GET` | Retrieve full scan results |
 | `/api/v1/scan/{id}/cbom` | `GET` | Get Cryptographic Bill of Materials |
+| `/api/v1/scan/{id}/compliance` | `GET` | Get regulatory compliance report |
+| `/api/v1/scan/{id}/certificate` | `GET` | Get PQC Readiness Certificate |
+| `/api/v1/scan/{id}/pdf` | `GET` | Download PDF report |
 | `/api/v1/history` | `GET` | List all past scans |
 | `/api/v1/scan/{id}` | `DELETE` | Remove a scan record |
 | `/api/v1/health` | `GET` | Health check (verifies Redis connectivity) |
@@ -383,6 +438,45 @@ Isolation Forest model that:
 
 ---
 
+## 🛡️ PQC Certificate
+
+Assets that pass quantum readiness thresholds receive a **QScan PQC Readiness Certificate** containing:
+
+- Subject domain and scan ID
+- Certificate validity window
+- Per-layer PQC migration status (Key Exchange, Authentication, TLS Handshake)
+- Current algorithms vs. recommended PQC replacements (e.g., ECDHE/DHE → ML-KEM-768)
+- Hybrid transition paths (e.g., X25519+ML-KEM-768, RSA+ML-DSA-65)
+
+---
+
+## 📜 Regulatory Compliance Assessment
+
+The platform automatically maps scan findings to major banking security frameworks:
+
+| Framework | Controls Checked |
+|---|---|
+| **RBI Cyber Security Framework** | §3.1 Encryption Standards, §3.4 Certificate Management, §9.3 Cryptographic Agility |
+| **CERT-In Directions 2022** | §6 Cryptographic Controls & CBOM logging |
+| **NIST PQC Standards** | ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205) readiness |
+| **PCI DSS** | TLS version, cipher strength, certificate validity |
+
+Each control shows a **Compliant ✅ / Non-Compliant ❌** status with evidence from the scan. An overall compliance score (e.g., 71% — 5/7 Controls) is displayed as a progress ring.
+
+---
+
+## 🩺 Engineer's Remediation Playbook
+
+After each scan, QScan generates a ready-to-use **Remediation Playbook** with copy-paste configuration snippets for:
+
+- **Nginx (OpenSSL 3.x)** — Enable `ssl_ecdh_curve X25519:X25519+Kyber768` for Hybrid PQC
+- **Apache HTTP Server** — Equivalent SSLOpenSSLConfCmd directives
+- **AWS App Load Balancer** — Security policy and listener rule configuration
+
+Each playbook includes numbered implementation steps and a configuration snippet panel with a **Copy Code** button.
+
+---
+
 ## 📊 PQC Migration Recommendations
 
 The platform recommends NIST-standardized Post-Quantum Cryptography algorithms with urgency timelines:
@@ -396,8 +490,34 @@ The platform recommends NIST-standardized Post-Quantum Cryptography algorithms w
 
 Each asset receives:
 - **Estimated Quantum Threat timeline** (e.g., 2030–2035)
-- **Migration Deadline** with urgency level (NEAR-TERM / MID-TERM)
+- **Migration Deadline** with urgency level (NEAR-TERM / MID-TERM / MONITOR)
 - **Hybrid transition paths** (e.g., X25519+ML-KEM-768)
+
+---
+
+## 📈 Analytics Dashboard
+
+The analytics section provides four visualizations powered by real scan data:
+
+| Chart | Description |
+|---|---|
+| **CRQC Algorithm Vulnerability Timeline** | Bar chart showing years until a CRQC can break each detected algorithm (RSA-2048, ECDSA, ML-KEM, etc.) with a Mosca Danger Zone threshold line |
+| **Cryptographic Posture Radar** | Multi-axis radar comparing your posture vs. ideal PQC-ready across TLS Version, Key Exchange, Forward Secrecy, Cipher Strength, Certificate Health, and PQC Readiness |
+| **Mosca Inequality Breach Window** | Gantt-style timeline overlaying Migration Window (X), Data Shelf-Life (Y), and CRQC Capability (Z) to visualize when breach risk opens |
+| **Quantum Vulnerability Breakdown** | Donut chart showing the ratio of Quantum Vulnerable vs. Quantum Safe cryptographic components across all scanned assets |
+
+---
+
+## 🤖 Quanta — AI Assistant
+
+**Quanta** is QScan's embedded AI chatbot, context-aware of your scan results. Ask it:
+
+- *"What are the top risks in this scan?"*
+- *"How do I migrate from ECDHE to ML-KEM-768?"*
+- *"Explain the Mosca Inequality and what it means for my data."*
+- *"Give me a week-by-week PQC migration plan."*
+
+Quanta responds with structured, step-by-step guidance including specific FIPS standards, hybrid algorithm choices, and implementation timelines tailored to your scan findings.
 
 ---
 
@@ -410,7 +530,9 @@ Each asset receives:
 | **Backend API** | FastAPI, Uvicorn, Pydantic |
 | **Cache/Store** | Redis (async via redis-py) |
 | **Frontend** | React 19, React Router, Recharts, Framer Motion, Axios |
-| **UI** | Lucide React icons , interqactive designs
+| **UI** | Lucide React icons, interactive designs |
+| **PDF Export** | ReportLab / WeasyPrint |
+| **AI Chatbot** | Claude API (Quanta assistant) |
 
 ---
 
@@ -432,6 +554,14 @@ Each asset receives:
 - [x] Certificate information viewer
 - [x] Scan history & management
 - [x] Real-time scan progress tracking
+- [x] **PQC Readiness Certificate issuance**
+- [x] **Quanta AI Chatbot assistant**
+- [x] **Regulatory Compliance Assessment (RBI, CERT-In, NIST, PCI DSS)**
+- [x] **Engineer's Remediation Playbook with copy-paste config templates**
+- [x] **PDF Report export**
+- [x] **Advanced Analytics Charts (CRQC Timeline, Posture Radar, Mosca Breach Window, Vulnerability Breakdown)**
+- [x] **Interactive Mosca Inequality Calculator with adjustable parameters**
+- [x] **HNDL (Harvest Now, Decrypt Later) vulnerability assessment**
 
 ---
 
